@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
@@ -6,14 +7,14 @@
     <title id="pageTitle">مركز حبشي للعيون - لوحة تحكم مدير النظام (Begol)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" id="bootstrapCss">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
+    <script src="js/supabaseClient.js"></script>
     <script src="js/auth-guard.js"></script>
     <style>
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .top-navbar { background-color: #ffffff; border-bottom: 2px solid #e2e8f0; }
-        .admin-tab-btn { font-weight: 700; border-radius: 8px; margin: 0 2px; font-size: 0.88rem; }
+        .admin-tab-btn { font-weight: 700; border-radius: 8px; margin: 0 2px; font-size: 0.82rem; }
         .admin-tab-btn.active { background-color: #b91c1c !important; color: white !important; border-color: #b91c1c !important; }
-        .portal-btn { font-weight: 600; border-radius: 8px; margin: 0 2px; font-size: 0.85rem; }
+        .portal-btn { font-weight: 600; border-radius: 8px; margin: 0 2px; font-size: 0.8rem; }
         .table-responsive { max-height: 72vh; }
         .badge-dept { font-size: 0.8rem; padding: 5px 10px; border-radius: 6px; }
         .card-custom { border-radius: 10px; border: 1px solid #e2e8f0; }
@@ -46,30 +47,29 @@
     <!-- البار العلوي -->
     <nav class="top-navbar py-2 px-3 shadow-sm mb-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center flex-wrap gap-2">
                 <span class="fs-4 me-2 text-danger">🛡️</span>
                 <div>
                     <h5 class="m-0 fw-bold text-dark" id="navCenterTitle">مركز حبشي التخصصي للعيون</h5>
                     <small class="text-danger fw-bold" style="font-size: 0.75rem;" id="navSystemName">نظام بيجول (Begol) • لوحة الإدارة</small>
                 </div>
                 
-                <!-- أزرار التابات الرئيسية الخمسة -->
-                <div class="d-inline-flex mx-3 flex-wrap gap-1">
+                <!-- أزرار التابات الرئيسية الستة -->
+                <div class="d-inline-flex mx-2 flex-wrap gap-1">
                     <button id="tabBtnServices" class="btn btn-outline-danger admin-tab-btn active" onclick="switchTab('services')">🩺 <span id="lblTabServices">الفحوصات والأسعار</span></button>
+                    <button id="tabBtnLabs" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('labs')">🧪 <span id="lblTabLabs">التحاليل الطبية</span></button>
                     <button id="tabBtnMeds" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('meds')">💧 <span id="lblTabMeds">الأدوية والقطرات</span></button>
                     <button id="tabBtnUsers" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('users')">👥 <span id="lblTabUsers">المستخدمين والأطباء</span></button>
-                    <button id="tabBtnInsurance" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('insurance')">🏢 <span id="lblTabInsurance">شركات التأمين والتعاقدات</span></button>
-                    <button id="tabBtnMerge" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('merge')">🔀 <span id="lblTabMerge">دمج الملفات المتكررة</span></button>
+                    <button id="tabBtnInsurance" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('insurance')">🏢 <span id="lblTabInsurance">شركات التأمين</span></button>
+                    <button id="tabBtnMerge" class="btn btn-outline-danger admin-tab-btn" onclick="switchTab('merge')">🔀 <span id="lblTabMerge">دمج الملفات</span></button>
                 </div>
 
                 <!-- اختصارات التنقل للشاشات -->
-                <div class="d-inline-flex border-start ps-3 align-items-center">
-                    <span class="badge bg-secondary me-2" id="lblPortals">الشاشات:</span>
+                <div class="d-inline-flex border-start ps-2 align-items-center flex-wrap gap-1">
                     <a href="reception.html" class="btn btn-outline-primary portal-btn" id="btnRec">🌐 الاستقبال</a>
                     <a href="doctor.html" class="btn btn-outline-success portal-btn" id="btnDoc">👨‍⚕️ عيادة الطبيب</a>
                     <a href="callcenter.html" class="btn btn-outline-info portal-btn" id="btnCall">📞 الكول سنتر</a>
-                    <a href="dilation.html" class="btn btn-outline-warning portal-btn" id="btnDil">💧 القطرات</a>
-                    <a href="queue.html" target="_blank" class="btn btn-outline-dark portal-btn" id="btnQueue">📺 الانتظار</a>
+                    <a href="accounting.html" class="btn btn-outline-warning portal-btn text-dark fw-bold">💰 الحسابات</a>
                 </div>
             </div>
 
@@ -291,7 +291,83 @@
         </div>
 
         <!-- ======================================================== -->
-        <!-- 2. تاب الأدوية والقطرات (Medications Tab)                -->
+        <!-- 2. تاب التحاليل الطبية (Lab Tests Tab)                    -->
+        <!-- ======================================================== -->
+        <div id="viewLabs" style="display: none;">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card card-custom shadow-sm bg-white">
+                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                            <span id="labFormTitle" class="text-danger">➕ إضافة تحليل معملي جديد</span>
+                            <span id="labBadgeStatus" class="badge bg-success">وضع إضافة</span>
+                        </div>
+                        <div class="card-body">
+                            <input type="hidden" id="labEditId" value="0">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold" id="lblLabNameAr">اسم التحليل (عربي):*</label>
+                                <input type="text" id="labNameAr" class="form-control form-control-sm" placeholder="مثلاً: سكر تراكمي / صورة دم كاملة">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold" id="lblLabNameEn">اسم التحليل (إنجليزي - Lab Test EN):*</label>
+                                <input type="text" id="labNameEn" class="form-control form-control-sm" placeholder="e.g. HbA1c / Complete Blood Count">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold" id="lblLabCategory">التصنيف المعملي:</label>
+                                <select id="labCategory" class="form-select form-select-sm fw-bold">
+                                    <option value="تحاليل عامة">تحاليل عامة وروتينية</option>
+                                    <option value="تحضير عمليات">فحوصات تجهيز العمليات الجراحية</option>
+                                    <option value="السكر والغدد">تحاليل السكر والغدد الصماء</option>
+                                    <option value="أمراض الدم">أمراض الدم وسيولة التجلط</option>
+                                    <option value="المناعة والالتهابات">المناعة وأمراض العيون الذاتية</option>
+                                    <option value="أمراض الشبكية">الشبكية والعدوى الفيروسية</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold" id="lblLabNotes">شروط التحضير والإرشادات (صيام / عينة):</label>
+                                <input type="text" id="labNotes" class="form-control form-control-sm" placeholder="مثلاً: صيام 8 ساعات / لا يشترط صيام">
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
+                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetLabForm()" id="btnLabNew">➕ جديد</button>
+                                <button type="button" id="btnSaveNewLab" class="btn btn-success flex-grow-1 fw-bold" onclick="saveLabTest('CREATE')">💾 حفظ التحليل</button>
+                                <button type="button" id="btnUpdateLab" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveLabTest('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                                <button type="button" id="btnDeleteLab" class="btn btn-outline-danger fw-bold" onclick="deleteLabTest(document.getElementById('labEditId').value)" style="display: none;">🗑️ حذف</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card card-custom shadow-sm bg-white">
+                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
+                            <span id="labTableTitle">🧪 قائمة التحاليل الطبية المعتمدة للعيادات والعمليات</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadLabTests()" id="btnRefreshLabs">🔄 تحديث</button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered text-center m-0 align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>الاسم بالعربي</th>
+                                            <th>الاسم بالإنجليزي</th>
+                                            <th>التصنيف</th>
+                                            <th>شروط التحضير</th>
+                                            <th>إجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="labTableBody">
+                                        <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- 3. تاب الأدوية والقطرات (Medications Tab)                -->
         <!-- ======================================================== -->
         <div id="viewMeds" style="display: none;">
             <div class="row g-3">
@@ -360,7 +436,7 @@
         </div>
 
         <!-- ======================================================== -->
-        <!-- 3. تاب المستخدمين والأطباء (Users Tab)                   -->
+        <!-- 4. تاب المستخدمين والأطباء (Users Tab)                   -->
         <!-- ======================================================== -->
         <div id="viewUsers" style="display: none;">
             <div class="row g-3">
@@ -411,6 +487,7 @@
                                 <input type="text" id="uTitle" class="form-control form-control-sm" placeholder="استشاري جراحة الشبكية">
                             </div>
 
+                            <!-- تحديد الشاشات المصرح له بفتحها (مضاف إليها شاشة الحسابات) -->
                             <div class="p-2 mb-3 bg-light border rounded">
                                 <label class="form-label small fw-bold text-dark d-block mb-1">🔐 الشاشات المصرح بفتحها لهذا المستخدم:</label>
                                 <div class="form-check form-check-inline">
@@ -426,8 +503,8 @@
                                     <label class="form-check-label small" for="chkScrCall">الكول سنتر</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrDilation" value="dilation">
-                                    <label class="form-check-label small" for="chkScrDilation">القطرات</label>
+                                    <input class="form-check-input" type="checkbox" id="chkScrAccounting" value="accounting">
+                                    <label class="form-check-label small" for="chkScrAccounting">الحسابات</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="chkScrAdmin" value="admin">
@@ -476,7 +553,7 @@
         </div>
 
         <!-- ======================================================== -->
-        <!-- 4. شركات التأمين والتعاقدات (Insurance Tab)              -->
+        <!-- 5. شركات التأمين والتعاقدات (Insurance Tab)              -->
         <!-- ======================================================== -->
         <div id="viewInsurance" style="display: none;">
             <div class="row g-3">
@@ -552,7 +629,7 @@
         </div>
 
         <!-- ======================================================== -->
-        <!-- 5. تاب أداة دمج ملفات المرضى المتكررة مع الصور المقارنة   -->
+        <!-- 6. تاب أداة دمج ملفات المرضى المتكررة                   -->
         <!-- ======================================================== -->
         <div id="viewMerge" style="display: none;">
             <div class="row justify-content-center">
@@ -637,6 +714,7 @@
 
     <script>
         let servicesData = [];
+        let labsData = [];
         let medsData = [];
         let usersData = [];
         let insuranceData = [];
@@ -652,6 +730,7 @@
                 navSystemName: 'نظام بيجول (Begol) • لوحة الإدارة',
                 btnLangToggle: '🌐 English',
                 lblTabServices: 'الفحوصات والأسعار',
+                lblTabLabs: 'التحاليل الطبية',
                 lblTabMeds: 'الأدوية والقطرات',
                 lblTabUsers: 'المستخدمين والأطباء',
                 lblTabInsurance: 'شركات التأمين والتعاقدات',
@@ -700,58 +779,17 @@
                 thPricing: 'التسعير المعتمد (ج.م)',
                 thDetails: 'تفاصيل وضوابط',
                 thActions: 'إجراءات',
-                medFormTitle: '➕ إضافة دواء / قطرة جديدة',
-                lblMedTradeName: 'اسم الدواء التجاري:*',
-                lblMedCategory: 'التصنيف الطبي:',
-                lblMedDose: 'الجرعة والتكرار الافتراضي:*',
-                lblMedInstructions: 'إرشادات ومعايير الاستعمال:',
-                btnMedNew: '➕ جديد',
-                btnSaveNewMed: '💾 حفظ الدواء',
-                btnUpdateMed: '✏️ حفظ التعديل',
-                btnDeleteMed: '🗑️ حذف',
-                medTableTitle: '💊 قائمة الأدوية والقطرات المسجلة',
-                btnRefreshMeds: '🔄 تحديث',
-                thMedName: 'اسم الدواء',
-                thMedCat: 'التصنيف',
-                thMedDose: 'الجرعة الافتراضية',
-                thMedInstr: 'إرشادات الاستعمال',
-                thMedActions: 'إجراءات',
-                userFormTitle: '➕ إضافة مستخدم / طبيب جديد',
-                lblUUsername: 'اسم الدخول (Username):*',
-                lblUPassword: 'كلمة المرور:*',
-                lblUFullName: 'الاسم ثلاثي:*',
-                lblURole: 'الدور والصلاحية:*',
-                lblUDoctorScope: 'طبيعة عمل الطبيب:*',
-                lblUTitle: 'الدرجة والتخصص الدقيق:',
-                btnUNew: '➕ جديد',
-                btnSaveNewUser: '💾 حفظ المستخدم',
-                btnUpdateUser: '✏️ حفظ التعديل',
-                btnDeleteUser: '🗑️ حذف',
-                userTableTitle: '👥 سجل المستخدمين، الأطباء، وتوزيع الصلاحيات',
-                btnRefreshUsers: '🔄 تحديث',
-                insFormTitle: '➕ إضافة جهة / شركة تأمين',
-                lblInsNameAr: 'اسم شركة التأمين / الهيئة (بالعربي):*',
-                lblInsNameEn: 'اسم الشركة بالإنجليزي (Company Name EN):',
-                lblInsDefaultCopay: 'نسبة التحمل الافتراضية للعقد (%):*',
-                lblCopaySign: 'تحمل',
-                lblInsNotes: 'ملاحظات وشروط التعاقد والموافقة المسبقة:',
-                btnInsNew: '➕ جديد',
-                btnSaveNewIns: '💾 حفظ التعاقد',
-                btnUpdateIns: '✏️ حفظ التعديل',
-                btnDeleteIns: '🗑️ حذف',
-                insTableTitle: '🏢 قائمة شركات التأمين والهيئات والتعاقدات المعتمدة',
-                btnRefreshIns: '🔄 تحديث',
-                thInsNameAr: 'الجهة / الشركة (عربي)',
-                thInsNameEn: 'الاسم بالإنجليزي',
-                thInsCopay: 'نسبة التحمل',
-                thInsNotes: 'شروط وملاحظات العقد',
-                thInsActions: 'إجراءات',
-                mergeCardTitle: '🔀 أداة دمج ملفات المرضى المتكررة ونقل السجلات الطبية',
-                mergeCardSub: 'صلاحية أمنية خاصة بالمشرف العام لحل مشكلة الملفات المكررة',
-                mergeAlertText: '⚠️ تنبيه هام: هذه العملية نهائية، ستقوم بنقل كافة الزيارات وتذاكر الكشف، الأشعة، الفحوصات، تقارير الليزر، العمليات، ومرفقات السكانر من الملف المكرر إلى الملف الأصلي، مع أرشفة الملف المكرر لمنع استخدامه مجدداً.',
-                lblMasterFile: '1. كود الملف الأصلي الأساسي (Master File):*',
-                lblDupFile: '2. كود الملف المكرر المراد نقله وإلغاؤه (Duplicate File):*',
-                btnExecuteMerge: '🔀 بدء الدمج ونقل كل السجلات الطبية بالكامل',
+                labFormTitle: '➕ إضافة تحليل معملي جديد',
+                lblLabNameAr: 'اسم التحليل (عربي):*',
+                lblLabNameEn: 'اسم التحليل (إنجليزي - Lab Test EN):*',
+                lblLabCategory: 'التصنيف المعملي:',
+                lblLabNotes: 'شروط التحضير والإرشادات (صيام / عينة):',
+                btnLabNew: '➕ جديد',
+                btnSaveNewLab: '💾 حفظ التحليل',
+                btnUpdateLab: '✏️ حفظ التعديل',
+                btnDeleteLab: '🗑️ حذف',
+                labTableTitle: '🧪 قائمة التحاليل الطبية المعتمدة للعيادات والعمليات',
+                btnRefreshLabs: '🔄 تحديث',
                 ftCenterName: 'مركز حبشي التخصصي للعيون',
                 ftRights: 'جميع الحقوق محفوظة © 2026',
                 ftDevBy: 'تم التطوير والبرمجة بواسطة:'
@@ -762,6 +800,7 @@
                 navSystemName: 'Begol System • Admin Dashboard',
                 btnLangToggle: '🌐 عربي',
                 lblTabServices: 'Services & Pricing',
+                lblTabLabs: 'Laboratory Tests',
                 lblTabMeds: 'Medications & Drops',
                 lblTabUsers: 'Users & Doctors',
                 lblTabInsurance: 'Insurance & Contracts',
@@ -810,58 +849,17 @@
                 thPricing: 'Approved Pricing',
                 thDetails: 'Details & Terms',
                 thActions: 'Actions',
-                medFormTitle: '➕ Add New Eye Drop / Drug',
-                lblMedTradeName: 'Trade Name:*',
-                lblMedCategory: 'Medical Category:',
-                lblMedDose: 'Default Dose & Frequency:*',
-                lblMedInstructions: 'Usage Instructions:',
-                btnMedNew: '➕ New',
-                btnSaveNewMed: '💾 Save Drug',
-                btnUpdateMed: '✏️ Save Changes',
-                btnDeleteMed: '🗑️ Delete',
-                medTableTitle: '💊 Registered Eye Drops & Medications',
-                btnRefreshMeds: '🔄 Refresh',
-                thMedName: 'Drug Name',
-                thMedCat: 'Category',
-                thMedDose: 'Default Dose',
-                thMedInstr: 'Instructions',
-                thMedActions: 'Actions',
-                userFormTitle: '➕ Add New User / Doctor',
-                lblUUsername: 'Username:*',
-                lblUPassword: 'Password:*',
-                lblUFullName: 'Full Name:*',
-                lblURole: 'Role & Permissions:*',
-                lblUDoctorScope: 'Doctor Scope:*',
-                lblUTitle: 'Degree / Subspecialty:',
-                btnUNew: '➕ New',
-                btnSaveNewUser: '💾 Save User',
-                btnUpdateUser: '✏️ Save Changes',
-                btnDeleteUser: '🗑️ Delete',
-                userTableTitle: '👥 Users, Doctors & Permissions List',
-                btnRefreshUsers: '🔄 Refresh',
-                insFormTitle: '➕ Add Insurance / Corporate',
-                lblInsNameAr: 'Company Name (Arabic):*',
-                lblInsNameEn: 'Company Name (English):',
-                lblInsDefaultCopay: 'Default Co-pay (%):*',
-                lblCopaySign: 'Co-pay',
-                lblInsNotes: 'Contract Terms & Pre-Approval Notes:',
-                btnInsNew: '➕ New',
-                btnSaveNewIns: '💾 Save Contract',
-                btnUpdateIns: '✏️ Save Changes',
-                btnDeleteIns: '🗑️ Delete',
-                insTableTitle: '🏢 Approved Insurance Companies & Contracts',
-                btnRefreshIns: '🔄 Refresh',
-                thInsNameAr: 'Company (Arabic)',
-                thInsNameEn: 'Company (English)',
-                thInsCopay: 'Co-pay',
-                thInsNotes: 'Contract Notes',
-                thInsActions: 'Actions',
-                mergeCardTitle: '🔀 Merge Duplicate Patient Records Tool',
-                mergeCardSub: 'Security Tool for System Admin to Solve Duplications',
-                mergeAlertText: '⚠️ Warning: This action is permanent. All records will be merged into master file and duplicate will be archived.',
-                lblMasterFile: '1. Master Patient ID:*',
-                lblDupFile: '2. Duplicate Patient ID to Archive:*',
-                btnExecuteMerge: '🔀 Execute Merge & Transfer All History',
+                labFormTitle: '➕ Add New Lab Test',
+                lblLabNameAr: 'Test Name (Arabic):*',
+                lblLabNameEn: 'Test Name (English):*',
+                lblLabCategory: 'Lab Category:',
+                lblLabNotes: 'Preparation & Fasting Notes:',
+                btnLabNew: '➕ New',
+                btnSaveNewLab: '💾 Save Test',
+                btnUpdateLab: '✏️ Save Changes',
+                btnDeleteLab: '🗑️ Delete',
+                labTableTitle: '🧪 Approved Clinical Laboratory Tests',
+                btnRefreshLabs: '🔄 Refresh',
                 ftCenterName: 'Habashy Specialized Eye Center',
                 ftRights: 'All Rights Reserved © 2026',
                 ftDevBy: 'Developed & Engineered by:'
@@ -877,6 +875,7 @@
             autoFillConsultationName();
 
             loadServices();
+            loadLabTests();
             loadMedications();
             loadUsers();
             loadInsurance();
@@ -902,12 +901,15 @@
                 : "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
 
             const dict = i18n[lang];
-            for (const [id, text] of Object.entries(dict)) {
-                const el = document.getElementById(id);
-                if (el) el.innerText = text;
+            if (dict) {
+                for (const [id, text] of Object.entries(dict)) {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = text;
+                }
             }
 
             renderServicesTable();
+            renderLabTable();
             renderMedicationsTable();
             renderUsersTable();
             renderInsuranceTable();
@@ -915,12 +917,14 @@
 
         function switchTab(tab) {
             document.getElementById('viewServices').style.display = (tab === 'services') ? 'block' : 'none';
+            document.getElementById('viewLabs').style.display = (tab === 'labs') ? 'block' : 'none';
             document.getElementById('viewMeds').style.display = (tab === 'meds') ? 'block' : 'none';
             document.getElementById('viewUsers').style.display = (tab === 'users') ? 'block' : 'none';
             document.getElementById('viewInsurance').style.display = (tab === 'insurance') ? 'block' : 'none';
             document.getElementById('viewMerge').style.display = (tab === 'merge') ? 'block' : 'none';
 
             document.getElementById('tabBtnServices').classList.toggle('active', tab === 'services');
+            document.getElementById('tabBtnLabs').classList.toggle('active', tab === 'labs');
             document.getElementById('tabBtnMeds').classList.toggle('active', tab === 'meds');
             document.getElementById('tabBtnUsers').classList.toggle('active', tab === 'users');
             document.getElementById('tabBtnInsurance').classList.toggle('active', tab === 'insurance');
@@ -985,9 +989,19 @@
         async function loadServices() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('services').select('*').order('id', { ascending: false });
+                const { data, error } = await db.from('ClinicServices').select('*').eq('IsActive', true).order('ServiceID', { ascending: false });
                 if (!error && data) {
-                    servicesData = data;
+                    servicesData = data.map(s => ({
+                        id: s.ServiceID,
+                        category: s.Category,
+                        name: s.ServiceName,
+                        price: s.Price,
+                        priceSingle: s.PriceSingle || s.Price,
+                        priceBoth: s.PriceBoth || (s.Price * 2),
+                        followupPrice: s.FollowupPrice || 0,
+                        followupDays: s.FollowupDays || 14,
+                        eyeSide: s.EyeSide || 'عام'
+                    }));
                     renderServicesTable();
                 }
             } catch (err) { }
@@ -1064,26 +1078,29 @@
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
             let payload = {
-                category, name, price,
-                priceSingle: parseFloat(document.getElementById('srvPriceSingle').value || 0),
-                priceBoth: parseFloat(document.getElementById('srvPriceBoth').value || 0),
-                followupPrice: parseFloat(document.getElementById('srvFollowupPrice').value || 0),
-                followupDays: parseInt(document.getElementById('srvFollowupDays').value || 14),
-                eyeSide: (category === 'وحدة العمليات') ? 'العين المقررة' : 'عام'
+                Category: category,
+                ServiceName: name,
+                Price: price,
+                PriceSingle: parseFloat(document.getElementById('srvPriceSingle').value || 0),
+                PriceBoth: parseFloat(document.getElementById('srvPriceBoth').value || 0),
+                FollowupPrice: parseFloat(document.getElementById('srvFollowupPrice').value || 0),
+                FollowupDays: parseInt(document.getElementById('srvFollowupDays').value || 14),
+                EyeSide: (category === 'وحدة العمليات') ? 'العين المقررة' : 'عام',
+                IsActive: true
             };
 
             if (db) {
                 let error = null;
                 if (isUpdate) {
-                    const res = await db.from('services').update(payload).eq('id', editId);
+                    const res = await db.from('ClinicServices').update(payload).eq('ServiceID', editId);
                     error = res.error;
                 } else {
-                    const res = await db.from('services').insert([payload]);
+                    const res = await db.from('ClinicServices').insert([payload]);
                     error = res.error;
                 }
 
                 if (!error) {
-                    alert('✅ تم الحفظ بنجاح في قاعدة البيانات سوبابيز');
+                    alert('✅ تم الحفظ بنجاح في سوبابيز');
                     resetSrvForm();
                     loadServices();
                 } else {
@@ -1140,20 +1157,137 @@
         async function deleteService(id) {
             if (!confirm('حذف هذه الخدمة نهائياً من قاعدة البيانات؟')) return;
             if (db) {
-                const { error } = await db.from('services').delete().eq('id', id);
+                const { error } = await db.from('ClinicServices').delete().eq('ServiceID', id);
                 if (!error) { resetSrvForm(); loadServices(); }
             }
         }
 
         // ========================================================
-        // 2. دوال الأدوية والقطرات
+        // 2. دوال التحاليل الطبية (Lab Tests)
+        // ========================================================
+        async function loadLabTests() {
+            if (!db) return;
+            try {
+                const { data, error } = await db.from('LabTests').select('*').eq('IsActive', true).order('Id', { ascending: false });
+                if (!error && data) {
+                    labsData = data.map(l => ({
+                        id: l.Id,
+                        nameAr: l.NameAr,
+                        nameEn: l.NameEn,
+                        category: l.Category,
+                        notes: l.Notes
+                    }));
+                    renderLabTable();
+                }
+            } catch (err) { }
+        }
+
+        function renderLabTable() {
+            const tbody = document.getElementById('labTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (labsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">${currentLanguage === 'ar' ? 'لا توجد تحاليل مسجلة حتى الآن.' : 'No lab tests found.'}</td></tr>`;
+                return;
+            }
+            labsData.forEach(lab => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold text-dark text-start ps-3">${lab.nameAr}</td>
+                        <td class="text-primary fw-bold">${lab.nameEn || '-'}</td>
+                        <td><span class="badge bg-info text-dark">${lab.category || 'عام'}</span></td>
+                        <td class="small text-muted">${lab.notes || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editLabTest(${lab.id})">✏️ ${currentLanguage === 'ar' ? 'تعديل' : 'Edit'}</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteLabTest(${lab.id})">🗑️ ${currentLanguage === 'ar' ? 'حذف' : 'Delete'}</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        async function saveLabTest(mode) {
+            const editId = parseInt(document.getElementById('labEditId').value || '0');
+            const nameAr = document.getElementById('labNameAr').value.trim();
+            const nameEn = document.getElementById('labNameEn').value.trim();
+            const category = document.getElementById('labCategory').value;
+            const notes = document.getElementById('labNotes').value.trim();
+
+            if (!nameAr || !nameEn) { alert('يرجى كتابة اسم التحليل بالعربي والإنجليزي بدقة!'); return; }
+
+            const payload = { NameAr: nameAr, NameEn: nameEn, Category: category, Notes: notes, IsActive: true };
+            const isUpdate = (mode === 'UPDATE' && editId > 0);
+
+            if (db) {
+                let error = null;
+                if (isUpdate) {
+                    const res = await db.from('LabTests').update(payload).eq('Id', editId);
+                    error = res.error;
+                } else {
+                    const res = await db.from('LabTests').insert([payload]);
+                    error = res.error;
+                }
+
+                if (!error) {
+                    alert('✅ تم حفظ التحليل بنجاح بسوبابيز');
+                    resetLabForm();
+                    loadLabTests();
+                } else {
+                    alert('خطأ: ' + error.message);
+                }
+            }
+        }
+
+        function editLabTest(id) {
+            const lab = labsData.find(x => x.id === id);
+            if (!lab) return;
+            document.getElementById('labEditId').value = lab.id;
+            document.getElementById('labNameAr').value = lab.nameAr;
+            document.getElementById('labNameEn').value = lab.nameEn || '';
+            document.getElementById('labCategory').value = lab.category || 'تحاليل عامة';
+            document.getElementById('labNotes').value = lab.notes || '';
+
+            document.getElementById('labFormTitle').innerText = `✏️ تعديل: ${lab.nameAr}`;
+            document.getElementById('btnSaveNewLab').style.display = 'none';
+            document.getElementById('btnUpdateLab').style.display = 'inline-block';
+            document.getElementById('btnDeleteLab').style.display = 'inline-block';
+        }
+
+        function resetLabForm() {
+            document.getElementById('labEditId').value = '0';
+            document.getElementById('labNameAr').value = '';
+            document.getElementById('labNameEn').value = '';
+            document.getElementById('labCategory').value = 'تحاليل عامة';
+            document.getElementById('labNotes').value = '';
+
+            document.getElementById('labFormTitle').innerText = currentLanguage === 'ar' ? '➕ إضافة تحليل معملي جديد' : '➕ Add New Lab Test';
+            document.getElementById('btnSaveNewLab').style.display = 'inline-block';
+            document.getElementById('btnUpdateLab').style.display = 'none';
+            document.getElementById('btnDeleteLab').style.display = 'none';
+        }
+
+        async function deleteLabTest(id) {
+            if (!confirm('هل تريد حذف هذا التحليل نهائياً؟')) return;
+            if (db) {
+                const { error } = await db.from('LabTests').delete().eq('Id', id);
+                if (!error) { resetLabForm(); loadLabTests(); }
+            }
+        }
+
+        // ========================================================
+        // 3. دوال الأدوية والقطرات
         // ========================================================
         async function loadMedications() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('medications').select('*').order('id', { ascending: false });
+                const { data, error } = await db.from('Medications').select('*').eq('IsActive', true).order('MedicationID', { ascending: false });
                 if (!error && data) {
-                    medsData = data;
+                    medsData = data.map(m => ({
+                        id: m.MedicationID,
+                        name: m.TradeName,
+                        category: m.Category,
+                        defaultDose: m.DefaultDose,
+                        instructions: m.Instructions
+                    }));
                     renderMedicationsTable();
                 }
             } catch (e) { }
@@ -1174,25 +1308,26 @@
             const name = document.getElementById('medTradeName').value.trim();
             if (!name) { alert('اسم الدواء مطلوب!'); return; }
             const payload = { 
-                name, 
-                category: document.getElementById('medCategory').value.trim(), 
-                defaultDose: document.getElementById('medDefaultDose').value.trim(), 
-                instructions: document.getElementById('medInstructions').value.trim() 
+                TradeName: name, 
+                Category: document.getElementById('medCategory').value.trim(), 
+                DefaultDose: document.getElementById('medDefaultDose').value.trim(), 
+                Instructions: document.getElementById('medInstructions').value.trim(),
+                IsActive: true
             };
             const isUpdate = (mode === 'UPDATE' && editId > 0);
 
             if (db) {
                 let error = null;
                 if (isUpdate) {
-                    const res = await db.from('medications').update(payload).eq('id', editId);
+                    const res = await db.from('Medications').update(payload).eq('MedicationID', editId);
                     error = res.error;
                 } else {
-                    const res = await db.from('medications').insert([payload]);
+                    const res = await db.from('Medications').insert([payload]);
                     error = res.error;
                 }
 
                 if (!error) {
-                    alert('✅ تم حفظ الدواء بنجاح بالسوبابيز');
+                    alert('✅ تم حفظ الدواء بنجاح');
                     resetMedForm();
                     loadMedications();
                 }
@@ -1226,20 +1361,28 @@
         async function deleteMedication(id) {
             if (!confirm('حذف هذا الدواء نهائياً؟')) return;
             if (db) {
-                const { error } = await db.from('medications').delete().eq('id', id);
+                const { error } = await db.from('Medications').delete().eq('MedicationID', id);
                 if (!error) { resetMedForm(); loadMedications(); }
             }
         }
 
         // ========================================================
-        // 3. دوال المستخدمين
+        // 4. دوال المستخدمين
         // ========================================================
         async function loadUsers() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('users').select('*').order('id', { ascending: false });
+                const { data, error } = await db.from('Users').select('*, Roles(RoleName)').eq('IsActive', true).order('UserID', { ascending: false });
                 if (!error && data) {
-                    usersData = data;
+                    usersData = data.map(u => ({
+                        id: u.UserID,
+                        username: u.Username,
+                        fullName: u.FullName,
+                        roleName: u.Roles?.RoleName || 'Consultant',
+                        doctorScope: u.DoctorScope || 'كشوفات وفحوصات',
+                        title: u.Notes || '',
+                        allowedScreens: u.AllowedScreens || 'all'
+                    }));
                     renderUsersTable();
                 }
             } catch (e) { }
@@ -1283,27 +1426,32 @@
             if (document.getElementById('chkScrReception').checked) allowedScreensList.push('reception');
             if (document.getElementById('chkScrDoctor').checked) allowedScreensList.push('doctor');
             if (document.getElementById('chkScrCall').checked) allowedScreensList.push('callcenter');
-            if (document.getElementById('chkScrDilation').checked) allowedScreensList.push('dilation');
+            if (document.getElementById('chkScrAccounting').checked) allowedScreensList.push('accounting');
             if (document.getElementById('chkScrAdmin').checked) allowedScreensList.push('admin');
             const allowedScreens = allowedScreensList.join(',');
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
+            
+            const { data: r } = await db.from('Roles').select('RoleID').eq('RoleName', document.getElementById('uRoleName').value).single();
+
             let payload = { 
-                username, fullName, 
-                roleName: document.getElementById('uRoleName').value, 
-                doctorScope: document.getElementById('uDoctorScope').value, 
-                title: document.getElementById('uTitle').value.trim(),
-                allowedScreens: allowedScreens
+                Username: username, 
+                FullName: fullName, 
+                RoleID: r ? r.RoleID : 1, 
+                DoctorScope: document.getElementById('uDoctorScope').value, 
+                Notes: document.getElementById('uTitle').value.trim(),
+                AllowedScreens: allowedScreens,
+                IsActive: true
             };
-            if (password) payload.password = password;
+            if (password) payload.PasswordHash = password;
 
             if (db) {
                 let error = null;
                 if (isUpdate) {
-                    const res = await db.from('users').update(payload).eq('id', editId);
+                    const res = await db.from('Users').update(payload).eq('UserID', editId);
                     error = res.error;
                 } else {
-                    const res = await db.from('users').insert([payload]);
+                    const res = await db.from('Users').insert([payload]);
                     error = res.error;
                 }
 
@@ -1332,7 +1480,7 @@
             document.getElementById('chkScrReception').checked = (screens === 'all' || screens.includes('reception'));
             document.getElementById('chkScrDoctor').checked = (screens === 'all' || screens.includes('doctor'));
             document.getElementById('chkScrCall').checked = (screens === 'all' || screens.includes('callcenter'));
-            document.getElementById('chkScrDilation').checked = (screens === 'all' || screens.includes('dilation'));
+            document.getElementById('chkScrAccounting').checked = (screens === 'all' || screens.includes('accounting'));
             document.getElementById('chkScrAdmin').checked = (screens === 'all' || screens.includes('admin'));
 
             document.getElementById('btnSaveNewUser').style.display = 'none';
@@ -1351,7 +1499,7 @@
             document.getElementById('chkScrReception').checked = true;
             document.getElementById('chkScrDoctor').checked = true;
             document.getElementById('chkScrCall').checked = false;
-            document.getElementById('chkScrDilation').checked = false;
+            document.getElementById('chkScrAccounting').checked = false;
             document.getElementById('chkScrAdmin').checked = false;
 
             document.getElementById('btnSaveNewUser').style.display = 'inline-block';
@@ -1362,20 +1510,26 @@
         async function deleteUser(id) {
             if (!confirm('حذف هذا المستخدم؟')) return;
             if (db) {
-                const { error } = await db.from('users').delete().eq('id', id);
+                const { error } = await db.from('Users').delete().eq('UserID', id);
                 if (!error) { resetUserForm(); loadUsers(); }
             }
         }
 
         // ========================================================
-        // 4. شركات التأمين
+        // 5. شركات التأمين
         // ========================================================
         async function loadInsurance() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('insurance').select('*').order('id', { ascending: false });
+                const { data, error } = await db.from('MasterInsurance').select('*').eq('IsActive', true).order('Id', { ascending: false });
                 if (!error && data) {
-                    insuranceData = data;
+                    insuranceData = data.map(i => ({
+                        id: i.Id,
+                        nameAr: i.NameAr,
+                        nameEn: i.NameEn,
+                        defaultCopay: i.DefaultCopay,
+                        notes: i.Notes
+                    }));
                     renderInsuranceTable();
                 }
             } catch (err) { }
@@ -1410,20 +1564,20 @@
             if (!nameAr) { alert('اسم شركة التأمين مطلوب!'); return; }
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
-            const payload = { nameAr, nameEn, defaultCopay, notes };
+            const payload = { NameAr: nameAr, NameEn: nameEn, DefaultCopay: defaultCopay, Notes: notes, IsActive: true };
 
             if (db) {
                 let error = null;
                 if (isUpdate) {
-                    const res = await db.from('insurance').update(payload).eq('id', editId);
+                    const res = await db.from('MasterInsurance').update(payload).eq('Id', editId);
                     error = res.error;
                 } else {
-                    const res = await db.from('insurance').insert([payload]);
+                    const res = await db.from('MasterInsurance').insert([payload]);
                     error = res.error;
                 }
 
                 if (!error) {
-                    alert('✅ تم حفظ شركة التأمين بنجاح بالسوبابيز');
+                    alert('✅ تم حفظ شركة التأمين بنجاح');
                     resetInsForm();
                     loadInsurance();
                 }
@@ -1461,13 +1615,13 @@
         async function deleteInsurance(id) {
             if (!confirm('حذف شركة التأمين؟')) return;
             if (db) {
-                const { error } = await db.from('insurance').delete().eq('id', id);
+                const { error } = await db.from('MasterInsurance').delete().eq('Id', id);
                 if (!error) { resetInsForm(); loadInsurance(); }
             }
         }
 
         // ========================================================
-        // 5. دمج ملفات المرضى
+        // 6. دمج ملفات المرضى
         // ========================================================
         async function previewPatientForMerge(type) {
             const inputId = type === 'master' ? document.getElementById('txtMasterId').value : document.getElementById('txtDuplicateId').value;
@@ -1482,11 +1636,11 @@
                 return;
             }
 
-            const { data, error } = await db.from('patients').select('*').eq('patientId', inputId).single();
+            const { data, error } = await db.from('Patients').select('*').eq('PatientID', parseInt(inputId)).single();
             if (!error && data) {
-                nameDiv.innerText = data.fullName;
-                detailsDiv.innerText = `بطاقة: ${data.nationalId || 'بدون'} | هاتف: ${data.mobile} | سن: ${data.age || '--'}`;
-                imgEl.src = data.photoData ? data.photoData : defaultAvatar;
+                nameDiv.innerText = data.FullName;
+                detailsDiv.innerText = `بطاقة: ${data.NationalID || 'بدون'} | هاتف: ${data.Mobile1 || 'بدون'} | سن: ${data.Age || '--'}`;
+                imgEl.src = data.PhotoData ? data.PhotoData : defaultAvatar;
             } else {
                 nameDiv.innerText = '❌ مريض غير موجود!';
                 detailsDiv.innerText = 'تأكد من كود الملف الصحيح';
@@ -1503,14 +1657,13 @@
                 return;
             }
 
-            const confirmMerge = confirm(`⚠️ تأكيد أمني نهائي:\nهل أنت متأكد من دمج كل سجلات الملف (#${dupId}) ونقلها للملف (#${masterId}) وأرشفة الملف المكرر؟`);
-            if (!confirmMerge) return;
+            if (!confirm(`⚠️ تأكيد أمني نهائي:\nهل أنت متأكد من دمج كل سجلات الملف (#${dupId}) ونقلها للملف (#${masterId}) وأرشفة الملف المكرر؟`)) return;
 
             if (db) {
-                await db.from('visits').update({ patientId: masterId }).eq('patientId', dupId);
-                await db.from('queue').update({ patientId: masterId }).eq('patientId', dupId);
-                await db.from('orders').update({ patientId: masterId }).eq('patientId', dupId);
-                await db.from('patients').update({ isArchived: true }).eq('patientId', dupId);
+                await db.from('Appointments').update({ PatientID: masterId }).eq('PatientID', dupId);
+                await db.from('PatientQueue').update({ PatientID: masterId }).eq('PatientID', dupId);
+                await db.from('PatientAttachments').update({ PatientID: masterId }).eq('PatientID', dupId);
+                await db.from('Patients').update({ FullName: 'مدمج [محذوف]', IsDeleted: 1, NationalID: null, Mobile1: null }).eq('PatientID', dupId);
 
                 alert('✅ تم تنفيذ الدمج بنجاح ونقل كافة السجلات الطبية وأرشفة الملف المكرر في سوبابيز!');
                 document.getElementById('txtMasterId').value = '';
