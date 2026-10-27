@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
@@ -89,604 +88,523 @@ html
         <div id="viewServices">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                            <span id="srvFormTitle" class="text-danger">➕ تسعير خدمة / فحص جديد</span>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span id="srvFormTitle" class="text-danger fw-bold fs-6">➕ تسعير خدمة / فحص جديد</span>
                             <span id="srvBadgeStatus" class="badge bg-success">وضع إضافة</span>
                         </div>
-                        <div class="card-body">
-                            <input type="hidden" id="srvEditId" value="0">
-                            
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold" id="lblSrvCategory">القسم التابع له:*</label>
-                                <select id="srvCategory" class="form-select form-select-sm fw-bold bg-light" onchange="onSrvCategoryChange()">
-                                    <option value="عيادة الكشف" id="optCatClinics">🏥 عيادات الكشف التخصصية</option>
-                                    <option value="وحدة الفحوصات" id="optCatScans">🔬 وحدة الفحوصات والأشعة</option>
-                                    <option value="وحدة الليزر" id="optCatLaser">⚡ وحدة الليزر والعلاج الضوئي</option>
-                                    <option value="وحدة العمليات" id="optCatSurgery">🏥 العمليات الجراحية</option>
+                        <input type="hidden" id="srvEditId" value="0">
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">القسم التابع له:*</label>
+                            <select id="srvCategory" class="form-select form-select-sm fw-bold bg-light" onchange="onSrvCategoryChange()">
+                                <option value="عيادة الكشف">🏥 عيادات الكشف التخصصية</option>
+                                <option value="وحدة الفحوصات">🔬 وحدة الفحوصات والأشعة</option>
+                                <option value="وحدة الليزر">⚡ وحدة الليزر والعلاج الضوئي</option>
+                                <option value="وحدة العمليات">🏥 العمليات الجراحية</option>
+                            </select>
+                        </div>
+
+                        <div id="boxConsultationConfig">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-primary">تخصص العيادة الدقيق:*</label>
+                                <select id="srvClinicSpecialty" class="form-select form-select-sm fw-bold" onchange="autoFillConsultationName()">
+                                    <option value="عيادة العيون العامة">عيادة العيون العامة (General)</option>
+                                    <option value="الشبكية والجسم الزجاجي">الشبكية والجسم الزجاجي (Retina)</option>
+                                    <option value="القرنية وتصحيح الإبصار">القرنية وتصحيح الإبصار (Cornea & Refractive)</option>
+                                    <option value="المياه البيضاء وزراعة العدسات">المياه البيضاء وزراعة العدسات (Cataract)</option>
+                                    <option value="المياه الزرقاء والجلوكوما">المياه الزرقاء والجلوكوما (Glaucoma)</option>
+                                    <option value="تجميل العيون وحجاج العين">تجميل العيون وحجاج العين (Oculoplastics)</option>
+                                    <option value="عيون الأطفال والحول">عيون الأطفال والحول (Pediatric & Strabismus)</option>
                                 </select>
                             </div>
 
-                            <div id="boxConsultationConfig">
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-primary" id="lblClinicSpecialty">تخصص العيادة الدقيق:*</label>
-                                    <select id="srvClinicSpecialty" class="form-select form-select-sm fw-bold" onchange="autoFillConsultationName()">
-                                        <option value="عيادة العيون العامة">عيادة العيون العامة (General)</option>
-                                        <option value="الشبكية والجسم الزجاجي">الشبكية والجسم الزجاجي (Retina)</option>
-                                        <option value="القرنية وتصحيح الإبصار">القرنية وتصحيح الإبصار (Cornea & Refractive)</option>
-                                        <option value="المياه البيضاء وزراعة العدسات">المياه البيضاء وزراعة العدسات (Cataract)</option>
-                                        <option value="المياه الزرقاء والجلوكوما">المياه الزرقاء والجلوكوما (Glaucoma)</option>
-                                        <option value="تجميل العيون وحجاج العين">تجميل العيون وحجاج العين (Oculoplastics)</option>
-                                        <option value="عيون الأطفال والحول">عيون الأطفال والحول (Pediatric & Strabismus)</option>
-                                        <option value="التهابات القزحية والمناعة">التهابات القزحية والمناعة (Uveitis)</option>
-                                        <option value="أمراض وأعصاب العين">أمراض وأعصاب العين (Neuro-Ophthalmology)</option>
-                                    </select>
-                                </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-success">نوع الخدمة / الزيارة:*</label>
+                                <select id="srvVisitType" class="form-select form-select-sm fw-bold border-success" onchange="autoFillConsultationName()">
+                                    <option value="كشف استشاري">كشف استشاري عيون</option>
+                                    <option value="كشف أخصائي">كشف أخصائي عيون</option>
+                                    <option value="استشارة / إعادة كشف">استشارة / إعادة كشف</option>
+                                    <option value="عرض تقرير ومتابعة">عرض تقرير / فحص متابعة</option>
+                                </select>
+                            </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-success" id="lblVisitType">نوع الخدمة / الزيارة:*</label>
-                                    <select id="srvVisitType" class="form-select form-select-sm fw-bold border-success" onchange="autoFillConsultationName()">
-                                        <option value="كشف استشاري">كشف استشاري عيون</option>
-                                        <option value="كشف أخصائي">كشف أخصائي عيون</option>
-                                        <option value="استشارة / إعادة كشف">استشارة / إعادة كشف</option>
-                                        <option value="عرض تقرير ومتابعة">عرض تقرير / فحص متابعة</option>
-                                    </select>
-                                </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold">المسمى الظاهر في الإيصال والتذكرة:*</label>
+                                <input type="text" id="srvConsultCustomName" class="form-control form-control-sm" placeholder="مثال: كشف استشاري - شبكية وجسم زجاجي">
+                            </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold" id="lblCustomName">المسمى الظاهر في الإيصال والتذكرة:*</label>
-                                    <input type="text" id="srvConsultCustomName" class="form-control form-control-sm" placeholder="مثال: كشف استشاري - شبكية وجسم زجاجي">
-                                </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-success">سعر الكشف (ج.م):*</label>
+                                <input type="number" id="srvConsultPrice" class="form-control form-control-sm fw-bold text-success text-center fs-5" value="300">
+                            </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-success" id="lblConsultPrice">سعر الكشف (ج.م):*</label>
-                                    <input type="number" id="srvConsultPrice" class="form-control form-control-sm fw-bold text-success text-center fs-5" value="300">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">سعر الاستشارة (ج.م):</label>
+                                    <input type="number" id="srvFollowupPrice" class="form-control form-control-sm text-center" value="0">
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">صلاحية الاستشارة (أيام):</label>
+                                    <input type="number" id="srvFollowupDays" class="form-control form-control-sm text-center" value="14">
+                                </div>
+                            </div>
+                        </div>
 
-                                <div class="row g-2 mb-2">
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold" id="lblFollowupPrice">سعر الاستشارة (ج.م):</label>
-                                        <input type="number" id="srvFollowupPrice" class="form-control form-control-sm text-center" value="0">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold" id="lblFollowupDays">صلاحية الاستشارة (أيام):</label>
-                                        <input type="number" id="srvFollowupDays" class="form-control form-control-sm text-center" value="14">
-                                    </div>
+                        <div id="boxInvestigationsConfig" style="display: none;">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-info">اختر الفحص الطبي المعتمد:*</label>
+                                <select id="srvInvestigationList" class="form-select form-select-sm fw-bold" onchange="onInvestigationSelect()">
+                                    <option value="أشعة مقطعية على الشبكية (OCT Macula)">أشعة مقطعية على الشبكية (OCT Macula)</option>
+                                    <option value="أشعة مقطعية على العصب البصري (OCT Optic Disc)">أشعة مقطعية على العصب البصري (OCT Optic Disc)</option>
+                                    <option value="أشعة مقطعية للأوعية الدموية (OCT-Angiography)">أشعة مقطعية للأوعية الدموية (OCT-Angiography)</option>
+                                    <option value="تصوير تضاريس وبنتاكام القرنية (Pentacam)">تصوير تضاريس وبنتاكام القرنية (Pentacam)</option>
+                                    <option value="فحص مجال الإبصار الكمبيوتري (Visual Field)">فحص مجال الإبصار الكمبيوتري (Visual Field)</option>
+                                    <option value="موجات فوق صوتية على العين (B-Scan Ultrasound)">موجات فوق صوتية على العين (B-Scan Ultrasound)</option>
+                                    <option value="حساب قوة العدسة داخل العين (Biometry / IOL Master)">حساب قوة العدسة (IOL Master / Biometry)</option>
+                                    <option value="CUSTOM">➕ فحص مخصص آخر (اكتب يدوياً)...</option>
+                                </select>
+                            </div>
+                            <div class="mb-2" id="divCustomInvName" style="display: none;">
+                                <label class="form-label small fw-bold">اسم الفحص المخصص:*</label>
+                                <input type="text" id="srvCustomInvInput" class="form-control form-control-sm" placeholder="اكتب اسم الفحص بدقة">
+                            </div>
+                        </div>
+
+                        <div id="boxLaserConfig" style="display: none;">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-danger">اختر نوع إجراء الليزر:*</label>
+                                <select id="srvLaserList" class="form-select form-select-sm fw-bold" onchange="onLaserSelect()">
+                                    <option value="أرجون ليزر على الشبكية (Argon Laser PRP)">أرجون ليزر على الشبكية (Argon Laser PRP)</option>
+                                    <option value="أرجون ليزر شبكية موضعي (Focal Argon)">أرجون ليزر شبكية موضعي (Focal Argon)</option>
+                                    <option value="ياج ليزر مسح محفظة خلفية (YAG Capsulotomy)">ياج ليزر مسح محفظة خلفية (YAG Capsulotomy)</option>
+                                    <option value="ياج ليزر ثقب القزحية (YAG Laser PI)">ياج ليزر ثقب القزحية (YAG Laser PI)</option>
+                                    <option value="CUSTOM">➕ إجراء ليزر مخصص آخر...</option>
+                                </select>
+                            </div>
+                            <div class="mb-2" id="divCustomLaserName" style="display: none;">
+                                <label class="form-label small fw-bold">اسم إجراء الليزر المخصص:*</label>
+                                <input type="text" id="srvCustomLaserInput" class="form-control form-control-sm" placeholder="اكتب اسم إجراء الليزر">
+                            </div>
+                        </div>
+
+                        <div id="boxSurgeryConfig" style="display: none;">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-success">اختر العملية الجراحية المقررة:*</label>
+                                <select id="srvSurgeryList" class="form-select form-select-sm fw-bold" onchange="onSurgerySelect()">
+                                    <option value="إزالة مياه بيضاء وزرع عدسة رخوة بالفاكو (Phaco)">إزالة مياه بيضاء وزرع عدسة رخوة بالفاكو (Phaco)</option>
+                                    <option value="إزالة مياه بيضاء بالفيمتو وزرع عدسة متعددة البؤر (FLACS)">إزالة مياه بيضاء بالفيمتو وزرع عدسة ممتازة (FLACS)</option>
+                                    <option value="زرع عدسة توريك لتصحيح الاستجماتيزم (Toric IOL)">زرع عدسة توريك للاستجماتيزم (Toric IOL)</option>
+                                    <option value="استئصال الجسم الزجاجي وعلاج انفصال الشبكية (Vitrectomy)">استئصال زجاجي وانفصال شبكية (Vitrectomy)</option>
+                                    <option value="CUSTOM">➕ عملية جراحية مخصصة أخرى...</option>
+                                </select>
+                            </div>
+                            <div class="mb-2" id="divCustomSurgeryName" style="display: none;">
+                                <label class="form-label small fw-bold">اسم العملية المخصصة:*</label>
+                                <input type="text" id="srvCustomSurgeryInput" class="form-control form-control-sm" placeholder="اكتب اسم العملية بدقة">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-success">تكلفة العملية الإجمالية (ج.م):*</label>
+                                <input type="number" id="srvSurgeryPrice" class="form-control form-control-sm fw-bold text-success text-center fs-5" value="6000">
+                            </div>
+                        </div>
+
+                        <div id="boxEyeProceduresPricing" style="display: none;">
+                            <div class="p-2 mb-2 rounded border" style="background-color: #f0fdf4;">
+                                <label class="form-label small fw-bold text-dark mb-1">سعر عين واحدة (OD / OS):*</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" id="srvPriceSingle" class="form-control fw-bold text-success text-center fs-6" placeholder="مثلاً: 1250" oninput="autoSuggestBothPrice()">
+                                    <span class="input-group-text">ج.م</span>
                                 </div>
                             </div>
 
-                            <div id="boxInvestigationsConfig" style="display: none;">
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-info" id="lblInvSelect">اختر الفحص الطبي المعتمد:*</label>
-                                    <select id="srvInvestigationList" class="form-select form-select-sm fw-bold" onchange="onInvestigationSelect()">
-                                        <option value="أشعة مقطعية على الشبكية (OCT Macula)">أشعة مقطعية على الشبكية (OCT Macula)</option>
-                                        <option value="أشعة مقطعية على العصب البصري (OCT Optic Disc)">أشعة مقطعية على العصب البصري (OCT Optic Disc)</option>
-                                        <option value="أشعة مقطعية للأوعية الدموية (OCT-Angiography)">أشعة مقطعية للأوعية الدموية (OCT-Angiography)</option>
-                                        <option value="تصوير تضاريس وبنتاكام القرنية (Pentacam)">تصوير تضاريس وبنتاكام القرنية (Pentacam)</option>
-                                        <option value="فحص مجال الإبصار الكمبيوتري (Visual Field)">فحص مجال الإبصار الكمبيوتري (Visual Field)</option>
-                                        <option value="موجات فوق صوتية على العين (B-Scan Ultrasound)">موجات فوق صوتية على العين (B-Scan Ultrasound)</option>
-                                        <option value="حساب قوة العدسة داخل العين (Biometry / IOL Master)">حساب قوة العدسة (IOL Master / Biometry)</option>
-                                        <option value="تصوير قاع العين بصبغة الفلورسين (FFA)">تصوير قاع العين بصبغة الفلورسين (FFA)</option>
-                                        <option value="CUSTOM">➕ فحص مخصص آخر (اكتب يدوياً)...</option>
-                                    </select>
+                            <div class="p-2 mb-2 rounded border" style="background-color: #fefce8;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label small fw-bold text-dark m-0">سعر كلتا العينين (OU):*</label>
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="applyDoublePrice()">مضاعفة (×2)</button>
                                 </div>
-                                <div class="mb-2" id="divCustomInvName" style="display: none;">
-                                    <label class="form-label small fw-bold">اسم الفحص المخصص:*</label>
-                                    <input type="text" id="srvCustomInvInput" class="form-control form-control-sm" placeholder="اكتب اسم الفحص بدقة">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" id="srvPriceBoth" class="form-control fw-bold text-primary text-center fs-6" placeholder="مثلاً: 1800">
+                                    <span class="input-group-text">ج.م</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div id="boxLaserConfig" style="display: none;">
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-danger" id="lblLaserSelect">اختر نوع إجراء الليزر:*</label>
-                                    <select id="srvLaserList" class="form-select form-select-sm fw-bold" onchange="onLaserSelect()">
-                                        <option value="أرجون ليزر على الشبكية (Argon Laser PRP)">أرجون ليزر على الشبكية (Argon Laser PRP)</option>
-                                        <option value="أرجون ليزر شبكية موضعي (Focal Argon)">أرجون ليزر شبكية موضعي (Focal Argon)</option>
-                                        <option value="ياج ليزر مسح محفظة خلفية (YAG Capsulotomy)">ياج ليزر مسح محفظة خلفية (YAG Capsulotomy)</option>
-                                        <option value="ياج ليزر ثقب القزحية (YAG Laser PI)">ياج ليزر ثقب القزحية (YAG Laser PI)</option>
-                                        <option value="ليزر سلكتيف للجلوكوما (SLT Trabeculoplasty)">ليزر سلكتيف للجلوكوما (SLT Trabeculoplasty)</option>
-                                        <option value="تثبيت قرنية ضوئي مع رايبوفلافين (Cross-Linking - CXL)">تثبيت قرنية ضوئي بالرايبوفلافين (CXL)</option>
-                                        <option value="تصحيح إبصار فيمتو ليزك (Femto-LASIK)">تصحيح إبصار فيمتو ليزك (Femto-LASIK)</option>
-                                        <option value="CUSTOM">➕ إجراء ليزر مخصص آخر (اكتب يدوياً)...</option>
-                                    </select>
-                                </div>
-                                <div class="mb-2" id="divCustomLaserName" style="display: none;">
-                                    <label class="form-label small fw-bold">اسم إجراء الليزر المخصص:*</label>
-                                    <input type="text" id="srvCustomLaserInput" class="form-control form-control-sm" placeholder="اكتب اسم إجراء الليزر">
-                                </div>
-                            </div>
-
-                            <div id="boxSurgeryConfig" style="display: none;">
-                                <div class="mb-2">
-                                    <label class="form-label small fw-bold text-success" id="lblSurgerySelect">اختر العملية الجراحية المقررة:*</label>
-                                    <select id="srvSurgeryList" class="form-select form-select-sm fw-bold" onchange="onSurgerySelect()">
-                                        <option value="إزالة مياه بيضاء وزرع عدسة رخوة بالفاكو (Phaco)">إزالة مياه بيضاء وزرع عدسة رخوة بالفاكو (Phaco)</option>
-                                        <option value="إزالة مياه بيضاء بالفيمتو وزرع عدسة متعددة البؤر (FLACS)">إزالة مياه بيضاء بالفيمتو وزرع عدسة ممتازة (FLACS)</option>
-                                        <option value="زرع عدسة توريك لتصحيح الاستجماتيزم (Toric IOL)">زرع عدسة توريك للاستجماتيزم (Toric IOL)</option>
-                                        <option value="استئصال الجسم الزجاجي وعلاج انفصال الشبكية (Vitrectomy)">استئصال زجاجي وانفصال شبكية (Vitrectomy)</option>
-                                        <option value="حقن مادة داخل العين (Anti-VEGF Injection)">حقن مادة داخل العين (Anti-VEGF Injection)</option>
-                                        <option value="ترقيع قرنية كلي نافذ (زراعة قرنية PKP)">ترقيع قرنية كلي نافذ (زراعة قرنية PKP)</option>
-                                        <option value="زرع عدسات ICL لتصحيح قصر النظر الشديد">زرع عدسات تصحيح قصر النظر (ICL)</option>
-                                        <option value="عملية إصلاح الحول وتقويم عضلات العين (Strabismus)">عملية تقويم عضلات العين وإصلاح الحول</option>
-                                        <option value="CUSTOM">➕ عملية جراحية مخصصة أخرى...</option>
-                                    </select>
-                                </div>
-                                <div class="mb-2" id="divCustomSurgeryName" style="display: none;">
-                                    <label class="form-label small fw-bold">اسم العملية المخصصة:*</label>
-                                    <input type="text" id="srvCustomSurgeryInput" class="form-control form-control-sm" placeholder="اكتب اسم العملية الجراحية بدقة">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold text-success" id="lblSurgeryPrice">سعر وتكلفة العملية الإجمالية (ج.م):*</label>
-                                    <input type="number" id="srvSurgeryPrice" class="form-control form-control-sm fw-bold text-success text-center fs-5" value="6000">
-                                </div>
-                            </div>
-
-                            <div id="boxEyeProceduresPricing" style="display: none;">
-                                <div class="p-2 mb-2 rounded border" style="background-color: #f0fdf4; border-color: #bbf7d0 !important;">
-                                    <label class="form-label small fw-bold text-dark mb-1" id="lblSingleEyePrice">سعر عين واحدة (OD / OS):*</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" id="srvPriceSingle" class="form-control fw-bold text-success text-center fs-6" placeholder="مثلاً: 1250" oninput="autoSuggestBothPrice()">
-                                        <span class="input-group-text" id="cur1">ج.م</span>
-                                    </div>
-                                </div>
-
-                                <div class="p-2 mb-2 rounded border" style="background-color: #fefce8; border-color: #fde68a !important;">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label small fw-bold text-dark m-0" id="lblBothEyesPrice">سعر كلتا العينين (OU):*</label>
-                                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 0.75rem;" onclick="applyDoublePrice()" id="btnDoublePrice">مضاعفة (×2)</button>
-                                    </div>
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" id="srvPriceBoth" class="form-control fw-bold text-primary text-center fs-6" placeholder="مثلاً: 1800">
-                                        <span class="input-group-text" id="cur2">ج.م</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
-                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetSrvForm()" id="btnSrvNew">➕ جديد</button>
-                                <button type="button" id="btnSaveNewSrv" class="btn btn-success flex-grow-1 fw-bold" onclick="saveService('CREATE')">💾 حفظ وتسعير</button>
-                                <button type="button" id="btnUpdateSrv" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveService('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
-                                <button type="button" id="btnDeleteSrv" class="btn btn-outline-danger fw-bold" onclick="deleteService(document.getElementById('srvEditId').value)" style="display: none;">🗑️ حذف</button>
-                            </div>
+                        <div class="d-flex gap-2 mt-3 pt-2 border-top">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetSrvForm()" id="btnSrvNew">➕ جديد</button>
+                            <button type="button" id="btnSaveNewSrv" class="btn btn-success flex-grow-1 fw-bold" onclick="saveService('CREATE')">💾 حفظ وتسعير</button>
+                            <button type="button" id="btnUpdateSrv" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveService('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                            <button type="button" id="btnDeleteSrv" class="btn btn-outline-danger fw-bold" onclick="deleteService(document.getElementById('srvEditId').value)" style="display: none;">🗑️ حذف</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-8">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
-                            <span class="text-dark" id="srvTableTitle">📋 قائمة الفحوصات والخدمات والعمليات المعتمدة</span>
-                            
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-secondary filter-btn active" onclick="filterServices('الكل', this)" id="fltAll">الكل</button>
-                                <button class="btn btn-outline-secondary filter-btn" onclick="filterServices('عيادة الكشف', this)" id="fltClinics">عيادة الكشف</button>
-                                <button class="btn btn-outline-secondary filter-btn" onclick="filterServices('وحدة الفحوصات', this)" id="fltInv">وحدة الفحوصات</button>
-                                <button class="btn btn-outline-secondary filter-btn" onclick="filterServices('وحدة الليزر', this)" id="fltLaser">وحدة الليزر</button>
-                                <button class="btn btn-outline-secondary filter-btn" onclick="filterServices('وحدة العمليات', this)" id="fltSurgery">العمليات</button>
-                            </div>
-
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadServices()" id="btnRefreshSrv">🔄 تحديث</button>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-2">
+                            <h5 class="fw-bold text-dark m-0">📋 قائمة الخدمات والفحوصات المعتمدة بسوبابيز</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadServices()">🔄 تحديث</button>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered text-center m-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th id="thDept">القسم</th>
-                                            <th id="thServiceName">اسم الخدمة / الفحص</th>
-                                            <th id="thPricing">التسعير المعتمد (ج.م)</th>
-                                            <th id="thDetails">تفاصيل وضوابط</th>
-                                            <th id="thActions">إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="srvTableBody">
-                                        <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered text-center m-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>القسم</th>
+                                        <th>اسم الخدمة / الفحص</th>
+                                        <th>التسعير المعتمد (ج.م)</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="srvTableBody">
+                                    <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- 2. تاب التحاليل الطبية (Lab Tests Tab)                    -->
-        <!-- ======================================================== -->
+        <!-- 2. التحاليل الطبية -->
         <div id="viewLabs" style="display: none;">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                            <span id="labFormTitle" class="text-danger">➕ إضافة تحليل معملي جديد</span>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span id="labFormTitle" class="text-danger fw-bold fs-6">➕ إضافة تحليل معملي جديد</span>
                             <span id="labBadgeStatus" class="badge bg-success">وضع إضافة</span>
                         </div>
-                        <div class="card-body">
-                            <input type="hidden" id="labEditId" value="0">
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblLabNameAr">اسم التحليل (عربي):*</label>
-                                <input type="text" id="labNameAr" class="form-control form-control-sm" placeholder="مثلاً: سكر تراكمي / صورة دم كاملة">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblLabNameEn">اسم التحليل (إنجليزي - Lab Test EN):*</label>
-                                <input type="text" id="labNameEn" class="form-control form-control-sm" placeholder="e.g. HbA1c / Complete Blood Count">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblLabCategory">التصنيف المعملي:</label>
-                                <select id="labCategory" class="form-select form-select-sm fw-bold">
-                                    <option value="تحاليل عامة">تحاليل عامة وروتينية</option>
-                                    <option value="تحضير عمليات">فحوصات تجهيز العمليات الجراحية</option>
-                                    <option value="السكر والغدد">تحاليل السكر والغدد الصماء</option>
-                                    <option value="أمراض الدم">أمراض الدم وسيولة التجلط</option>
-                                    <option value="المناعة والالتهابات">المناعة وأمراض العيون الذاتية</option>
-                                    <option value="أمراض الشبكية">الشبكية والعدوى الفيروسية</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold" id="lblLabNotes">شروط التحضير والإرشادات (صيام / عينة):</label>
-                                <input type="text" id="labNotes" class="form-control form-control-sm" placeholder="مثلاً: صيام 8 ساعات / لا يشترط صيام">
-                            </div>
-
-                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
-                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetLabForm()" id="btnLabNew">➕ جديد</button>
-                                <button type="button" id="btnSaveNewLab" class="btn btn-success flex-grow-1 fw-bold" onclick="saveLabTest('CREATE')">💾 حفظ التحليل</button>
-                                <button type="button" id="btnUpdateLab" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveLabTest('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
-                                <button type="button" id="btnDeleteLab" class="btn btn-outline-danger fw-bold" onclick="deleteLabTest(document.getElementById('labEditId').value)" style="display: none;">🗑️ حذف</button>
-                            </div>
+                        <input type="hidden" id="labEditId" value="0">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم التحليل (عربي):*</label>
+                            <input type="text" id="labNameAr" class="form-control form-control-sm" placeholder="مثلاً: سكر تراكمي / صورة دم كاملة">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم التحليل (إنجليزي):*</label>
+                            <input type="text" id="labNameEn" class="form-control form-control-sm" placeholder="e.g. HbA1c / Complete Blood Count">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">التصنيف المعملي:</label>
+                            <select id="labCategory" class="form-select form-select-sm fw-bold">
+                                <option value="تحاليل عامة">تحاليل عامة وروتينية</option>
+                                <option value="تحضير عمليات">فحوصات تجهيز العمليات الجراحية</option>
+                                <option value="السكر والغدد">تحاليل السكر والغدد الصماء</option>
+                                <option value="أمراض الدم">أمراض الدم وسيولة التجلط</option>
+                                <option value="المناعة والالتهابات">المناعة وأمراض العيون الذاتية</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">شروط التحضير والإرشادات:</label>
+                            <input type="text" id="labNotes" class="form-control form-control-sm" placeholder="صيام 8 ساعات / لا يشترط صيام">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetLabForm()" id="btnLabNew">➕ جديد</button>
+                            <button type="button" id="btnSaveNewLab" class="btn btn-success flex-grow-1 fw-bold" onclick="saveLabTest('CREATE')">💾 حفظ التحليل</button>
+                            <button type="button" id="btnUpdateLab" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveLabTest('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                            <button type="button" id="btnDeleteLab" class="btn btn-outline-danger fw-bold" onclick="deleteLabTest(document.getElementById('labEditId').value)" style="display: none;">🗑️ حذف</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-8">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                            <span id="labTableTitle">🧪 قائمة التحاليل الطبية المعتمدة للعيادات والعمليات</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadLabTests()" id="btnRefreshLabs">🔄 تحديث</button>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <h5 class="fw-bold text-dark m-0">🧪 قائمة التحاليل الطبية المعتمدة</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadLabTests()">🔄 تحديث</button>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered text-center m-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>الاسم بالعربي</th>
-                                            <th>الاسم بالإنجليزي</th>
-                                            <th>التصنيف</th>
-                                            <th>شروط التحضير</th>
-                                            <th>إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="labTableBody">
-                                        <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered text-center m-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>الاسم بالعربي</th><th>الاسم بالإنجليزي</th><th>التصنيف</th><th>شروط التحضير</th><th>إجراءات</th></tr>
+                                </thead>
+                                <tbody id="labTableBody">
+                                    <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- 3. تاب الأدوية والقطرات (Medications Tab)                -->
-        <!-- ======================================================== -->
+        <!-- 3. الأدوية والقطرات -->
         <div id="viewMeds" style="display: none;">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                            <span id="medFormTitle" class="text-danger">➕ إضافة دواء / قطرة جديدة</span>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span id="medFormTitle" class="text-danger fw-bold fs-6">➕ إضافة دواء / قطرة جديدة</span>
                             <span id="medBadgeStatus" class="badge bg-success">وضع إضافة</span>
                         </div>
-                        <div class="card-body">
-                            <input type="hidden" id="medEditId" value="0">
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblMedTradeName">اسم الدواء التجاري:*</label>
-                                <input type="text" id="medTradeName" class="form-control form-control-sm" placeholder="مثلاً: Tobradex / Hyabak">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblMedCategory">التصنيف الطبي:</label>
-                                <input type="text" id="medCategory" class="form-control form-control-sm" placeholder="مضاد حيوي / قطرة مرطبة">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblMedDose">الجرعة والتكرار الافتراضي:*</label>
-                                <input type="text" id="medDefaultDose" class="form-control form-control-sm" placeholder="نقطة 4 مرات يومياً">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold" id="lblMedInstructions">إرشادات ومعايير الاستعمال:</label>
-                                <input type="text" id="medInstructions" class="form-control form-control-sm" placeholder="رج جيداً / حفظ بالثلاجة">
-                            </div>
-
-                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
-                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetMedForm()" id="btnMedNew">➕ جديد</button>
-                                <button type="button" id="btnSaveNewMed" class="btn btn-success flex-grow-1 fw-bold" onclick="saveMedication('CREATE')">💾 حفظ الدواء</button>
-                                <button type="button" id="btnUpdateMed" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveMedication('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
-                                <button type="button" id="btnDeleteMed" class="btn btn-outline-danger fw-bold" onclick="deleteMedication(document.getElementById('medEditId').value)" style="display: none;">🗑️ حذف</button>
-                            </div>
+                        <input type="hidden" id="medEditId" value="0">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم الدواء التجاري:*</label>
+                            <input type="text" id="medTradeName" class="form-control form-control-sm" placeholder="مثلاً: Tobradex / Hyabak">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">التصنيف الطبي:</label>
+                            <input type="text" id="medCategory" class="form-control form-control-sm" placeholder="مضاد حيوي / قطرة مرطبة">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">الجرعة والتكرار الافتراضي:*</label>
+                            <input type="text" id="medDefaultDose" class="form-control form-control-sm" placeholder="نقطة 4 مرات يومياً">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">إرشادات الاستعمال:</label>
+                            <input type="text" id="medInstructions" class="form-control form-control-sm" placeholder="رج جيداً / حفظ بالثلاجة">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetMedForm()" id="btnMedNew">➕ جديد</button>
+                            <button type="button" id="btnSaveNewMed" class="btn btn-success flex-grow-1 fw-bold" onclick="saveMedication('CREATE')">💾 حفظ الدواء</button>
+                            <button type="button" id="btnUpdateMed" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveMedication('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                            <button type="button" id="btnDeleteMed" class="btn btn-outline-danger fw-bold" onclick="deleteMedication(document.getElementById('medEditId').value)" style="display: none;">🗑️ حذف</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-8">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                            <span id="medTableTitle">💊 قائمة الأدوية والقطرات المسجلة</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadMedications()" id="btnRefreshMeds">🔄 تحديث</button>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <h5 class="fw-bold text-dark m-0">💊 قائمة الأدوية والقطرات المسجلة</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadMedications()">🔄 تحديث</button>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered text-center m-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>اسم الدواء</th>
-                                            <th>التصنيف</th>
-                                            <th>الجرعة الافتراضية</th>
-                                            <th>إرشادات الاستعمال</th>
-                                            <th>إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="medTableBody">
-                                        <tr><td colspan="5" class="text-muted py-4">جاري التحميل...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered text-center m-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>اسم الدواء</th><th>التصنيف</th><th>الجرعة الافتراضية</th><th>إرشادات</th><th>إجراءات</th></tr>
+                                </thead>
+                                <tbody id="medTableBody">
+                                    <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- 4. تاب المستخدمين والأطباء (Users Tab)                   -->
-        <!-- ======================================================== -->
+        <!-- 4. المستخدمين والأطباء والصلاحيات -->
         <div id="viewUsers" style="display: none;">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                            <span id="userFormTitle" class="text-danger">➕ إضافة مستخدم / طبيب جديد</span>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span id="userFormTitle" class="text-danger fw-bold fs-6">➕ إضافة مستخدم / طبيب جديد</span>
                             <span id="userBadgeStatus" class="badge bg-success">وضع إضافة</span>
                         </div>
-                        <div class="card-body">
-                            <input type="hidden" id="userEditId" value="0">
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblUUsername">اسم الدخول (Username):*</label>
-                                <input type="text" id="uUsername" class="form-control form-control-sm">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblUPassword">كلمة المرور:*</label>
-                                <input type="password" id="uPassword" class="form-control form-control-sm" placeholder="•••••••• (اتركها فارغة لعدم التغيير)">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblUFullName">الاسم ثلاثي:*</label>
-                                <input type="text" id="uFullName" class="form-control form-control-sm" placeholder="د. أحمد محمود">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblURole">الدور والصلاحية:*</label>
-                                <select id="uRoleName" class="form-select form-select-sm fw-bold" onchange="checkRoleDoctor()">
-                                    <option value="Consultant">👨‍⚕️ استشاري عيون (Consultant)</option>
-                                    <option value="Specialist">🩺 أخصائي عيون (Specialist)</option>
-                                    <option value="Resident">👨‍🔬 طبيب نائب / تحضير حالات (Resident)</option>
-                                    <option value="Reception">🏢 موظف استقبال (Reception)</option>
-                                    <option value="CallCenter">📞 موظف كول سنتر (CallCenter)</option>
-                                    <option value="Dilation">💧 موظف قطرات وتوسيع (Dilation)</option>
-                                    <option value="Admin">🛡️ مدير نظام كامل (Admin)</option>
-                                </select>
-                            </div>
-                            
-                            <div id="doctorScopeBox" class="mb-2">
-                                <label class="form-label small fw-bold text-primary" id="lblUDoctorScope">طبيعة عمل الطبيب:*</label>
-                                <select id="uDoctorScope" class="form-select form-select-sm fw-bold">
-                                    <option value="كشوفات وفحوصات">كشوفات عيادة + فحوصات وأشعة معاً</option>
-                                    <option value="كشوفات فقط">كشوفات عيادة فقط</option>
-                                    <option value="فحوصات فقط">أخصائي / استشاري فحوصات وأشعة فقط</option>
-                                </select>
-                            </div>
+                        <input type="hidden" id="userEditId" value="0">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">الدور والصلاحية:*</label>
+                            <select id="uRoleName" class="form-select form-select-sm fw-bold border-primary" onchange="checkRoleDoctor()">
+                                <option value="Consultant">👨‍⚕️ استشاري عيون (Consultant)</option>
+                                <option value="Specialist">🩺 أخصائي عيون (Specialist)</option>
+                                <option value="Resident">👨‍🔬 طبيب نائب / تحضير حالات (Resident)</option>
+                                <option value="Reception">🏢 موظف استقبال (Reception)</option>
+                                <option value="CallCenter">📞 موظف كول سنتر (CallCenter)</option>
+                                <option value="Accounting">💰 موظف حسابات وماليات (Accounting)</option>
+                                <option value="Admin">🛡️ مدير نظام كامل (Admin)</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم الدخول (Username):*</label>
+                            <input type="text" id="uUsername" class="form-control form-control-sm" placeholder="e.g. dr_ahmed">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">كلمة المرور:*</label>
+                            <input type="password" id="uPassword" class="form-control form-control-sm" placeholder="•••••••• (اتركها فارغة لعدم التغيير عند التعديل)">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">الاسم بالكامل:*</label>
+                            <input type="text" id="uFullName" class="form-control form-control-sm" placeholder="د. أحمد محمود">
+                        </div>
 
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblUTitle">الدرجة والتخصص الدقيق:</label>
-                                <input type="text" id="uTitle" class="form-control form-control-sm" placeholder="استشاري جراحة الشبكية">
-                            </div>
+                        <div id="doctorScopeBox" class="mb-2 p-2 bg-light rounded border">
+                            <label class="form-label small fw-bold text-primary">طبيعة عمل الطبيب:</label>
+                            <select id="uDoctorScope" class="form-select form-select-sm fw-bold">
+                                <option value="كشوفات وفحوصات">كشوفات عيادة + فحوصات وأشعة معاً</option>
+                                <option value="كشوفات فقط">كشوفات عيادة فقط</option>
+                                <option value="فحوصات فقط">أخصائي / استشاري فحوصات وأشعة فقط</option>
+                            </select>
+                            <label class="form-label small fw-bold mt-1">الدرجة والتخصص الدقيق:</label>
+                            <input type="text" id="uTitle" class="form-control form-control-sm" placeholder="استشاري جراحة الشبكية">
+                        </div>
 
-                            <!-- تحديد الشاشات المصرح له بفتحها (مضاف إليها شاشة الحسابات) -->
-                            <div class="p-2 mb-3 bg-light border rounded">
-                                <label class="form-label small fw-bold text-dark d-block mb-1">🔐 الشاشات المصرح بفتحها لهذا المستخدم:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrReception" value="reception" checked>
-                                    <label class="form-check-label small" for="chkScrReception">الاستقبال</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrDoctor" value="doctor" checked>
-                                    <label class="form-check-label small" for="chkScrDoctor">عيادة الطبيب</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrCall" value="callcenter">
-                                    <label class="form-check-label small" for="chkScrCall">الكول سنتر</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrAccounting" value="accounting">
-                                    <label class="form-check-label small" for="chkScrAccounting">الحسابات</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="chkScrAdmin" value="admin">
-                                    <label class="form-check-label small" for="chkScrAdmin">الإدارة</label>
-                                </div>
+                        <!-- تحديد الشاشات المصرح بها -->
+                        <div class="p-2 mb-3 bg-light border rounded">
+                            <label class="form-label small fw-bold text-dark d-block mb-1">🔐 الشاشات المصرح بفتحها لهذا المستخدم:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="chkScrReception" value="reception" checked>
+                                <label class="form-check-label small" for="chkScrReception">الاستقبال</label>
                             </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="chkScrDoctor" value="doctor" checked>
+                                <label class="form-check-label small" for="chkScrDoctor">عيادة الطبيب</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="chkScrCall" value="callcenter">
+                                <label class="form-check-label small" for="chkScrCall">الكول سنتر</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="chkScrAccounting" value="accounting">
+                                <label class="form-check-label small" for="chkScrAccounting">الحسابات</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="chkScrAdmin" value="admin">
+                                <label class="form-check-label small" for="chkScrAdmin">الإدارة</label>
+                            </div>
+                        </div>
 
-                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
-                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetUserForm()" id="btnUNew">➕ جديد</button>
-                                <button type="button" id="btnSaveNewUser" class="btn btn-success flex-grow-1 fw-bold" onclick="saveUser('CREATE')">💾 حفظ المستخدم</button>
-                                <button type="button" id="btnUpdateUser" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveUser('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
-                                <button type="button" id="btnDeleteUser" class="btn btn-outline-danger fw-bold" onclick="deleteUser(document.getElementById('userEditId').value)" style="display: none;">🗑️ حذف</button>
-                            </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetUserForm()" id="btnUNew">➕ جديد</button>
+                            <button type="button" id="btnSaveNewUser" class="btn btn-success flex-grow-1 fw-bold" onclick="saveUser('CREATE')">💾 حفظ المستخدم</button>
+                            <button type="button" id="btnUpdateUser" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveUser('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                            <button type="button" id="btnDeleteUser" class="btn btn-outline-danger fw-bold" onclick="deleteUser(document.getElementById('userEditId').value)" style="display: none;">🗑️ حذف</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-8">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                            <span id="userTableTitle">👥 سجل المستخدمين، الأطباء، وتوزيع الصلاحيات</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadUsers()" id="btnRefreshUsers">🔄 تحديث</button>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <h5 class="fw-bold text-dark m-0">👥 سجل المستخدمين، الأطباء، وتوزيع الصلاحيات</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadUsers()">🔄 تحديث</button>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered text-center m-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>اسم الدخول</th>
-                                            <th>الاسم</th>
-                                            <th>الدور والصلاحية</th>
-                                            <th>طبيعة العمل</th>
-                                            <th>الشاشات المصرح بها</th>
-                                            <th>إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="userTableBody">
-                                        <tr><td colspan="6" class="text-muted py-4">جاري التحميل...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered text-center m-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>اسم الدخول</th>
+                                        <th>الاسم</th>
+                                        <th>الدور والصلاحية</th>
+                                        <th>طبيعة العمل</th>
+                                        <th>الشاشات المصرح بها</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                    <tr><td colspan="6" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- 5. شركات التأمين والتعاقدات (Insurance Tab)              -->
-        <!-- ======================================================== -->
+        <!-- 5. شركات التأمين والتعاقدات -->
         <div id="viewInsurance" style="display: none;">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                            <span id="insFormTitle" class="text-danger">➕ إضافة جهة / شركة تأمين</span>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span id="insFormTitle" class="text-danger fw-bold fs-6">➕ إضافة جهة / شركة تأمين</span>
                             <span id="insBadgeStatus" class="badge bg-success">وضع إضافة</span>
                         </div>
-                        <div class="card-body">
-                            <input type="hidden" id="insEditId" value="0">
-                            
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblInsNameAr">اسم شركة التأمين / الهيئة (بالعربي):*</label>
-                                <input type="text" id="insNameAr" class="form-control form-control-sm" placeholder="مثلاً: أكسا / نقابة المهندسين / بنك مصر">
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold" id="lblInsNameEn">اسم الشركة بالإنجليزي (Company Name EN):</label>
-                                <input type="text" id="insNameEn" class="form-control form-control-sm" placeholder="e.g. AXA Insurance">
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold text-success" id="lblInsDefaultCopay">نسبة التحمل الافتراضية للعقد (%):*</label>
-                                <div class="input-group input-group-sm">
-                                    <input type="text" id="insDefaultCopay" class="form-control fw-bold text-center text-success" value="10%" placeholder="10% أو 20% أو معفي 0%">
-                                    <span class="input-group-text" id="lblCopaySign">تحمل</span>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold" id="lblInsNotes">ملاحظات وشروط التعاقد والموافقة المسبقة:</label>
-                                <textarea id="insNotes" class="form-control form-control-sm" rows="3" placeholder="ملاحظات العقد..."></textarea>
-                            </div>
-
-                            <div class="d-flex gap-2 mt-3 pt-2 border-top">
-                                <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetInsForm()" id="btnInsNew">➕ جديد</button>
-                                <button type="button" id="btnSaveNewIns" class="btn btn-success flex-grow-1 fw-bold" onclick="saveInsurance('CREATE')">💾 حفظ التعاقد</button>
-                                <button type="button" id="btnUpdateIns" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveInsurance('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
-                                <button type="button" id="btnDeleteIns" class="btn btn-outline-danger fw-bold" onclick="deleteInsurance(document.getElementById('insEditId').value)" style="display: none;">🗑️ حذف</button>
-                            </div>
+                        <input type="hidden" id="insEditId" value="0">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم الشركة (عربي):*</label>
+                            <input type="text" id="insNameAr" class="form-control form-control-sm" placeholder="مثلاً: مصر للتأمين / أكسا">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">اسم الشركة (إنجليزي):</label>
+                            <input type="text" id="insNameEn" class="form-control form-control-sm" placeholder="e.g. AXA Insurance">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold text-success">نسبة التحمل الافتراضية للعقد (%):*</label>
+                            <input type="text" id="insDefaultCopay" class="form-control form-control-sm fw-bold text-center text-success" value="10%">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">ملاحظات وشروط التعاقد والموافقة المسبقة:</label>
+                            <textarea id="insNotes" class="form-control form-control-sm" rows="3" placeholder="ملاحظات العقد..."></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-3" onclick="resetInsForm()" id="btnInsNew">➕ جديد</button>
+                            <button type="button" id="btnSaveNewIns" class="btn btn-success flex-grow-1 fw-bold" onclick="saveInsurance('CREATE')">💾 حفظ التعاقد</button>
+                            <button type="button" id="btnUpdateIns" class="btn btn-primary flex-grow-1 fw-bold" onclick="saveInsurance('UPDATE')" style="display: none;">✏️ حفظ التعديل</button>
+                            <button type="button" id="btnDeleteIns" class="btn btn-outline-danger fw-bold" onclick="deleteInsurance(document.getElementById('insEditId').value)" style="display: none;">🗑️ حذف</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-8">
-                    <div class="card card-custom shadow-sm bg-white">
-                        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                            <span id="insTableTitle">🏢 قائمة شركات التأمين والهيئات والتعاقدات المعتمدة</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadInsurance()" id="btnRefreshIns">🔄 تحديث</button>
+                    <div class="card card-custom shadow-sm bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <h5 class="fw-bold text-dark m-0">🏢 قائمة شركات التأمين والهيئات والتعاقدات المعتمدة</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadInsurance()">🔄 تحديث</button>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered text-center m-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th id="thInsNameAr">الجهة / الشركة (عربي)</th>
-                                            <th id="thInsNameEn">الاسم بالإنجليزي</th>
-                                            <th id="thInsCopay">نسبة التحمل</th>
-                                            <th id="thInsNotes">شروط وملاحظات العقد</th>
-                                            <th id="thInsActions">إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="insTableBody">
-                                        <tr><td colspan="5" class="text-muted py-4">جاري التحميل...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered text-center m-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الجهة / الشركة (عربي)</th>
+                                        <th>الاسم بالإنجليزي</th>
+                                        <th>نسبة التحمل</th>
+                                        <th>شروط وملاحظات العقد</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="insTableBody">
+                                    <tr><td colspan="5" class="text-muted py-4">جاري التحميل من سوبابيز...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- 6. تاب أداة دمج ملفات المرضى المتكررة                   -->
-        <!-- ======================================================== -->
+        <!-- 6. دمج الملفات المتكررة -->
         <div id="viewMerge" style="display: none;">
             <div class="row justify-content-center">
                 <div class="col-md-10">
-                    <div class="card card-custom shadow-sm bg-white border-primary">
-                        <div class="card-header bg-primary text-white py-3">
-                            <h5 class="m-0 fw-bold" id="mergeCardTitle">🔀 أداة دمج ملفات المرضى المتكررة ونقل السجلات الطبية</h5>
-                            <small id="mergeCardSub">صلاحية أمنية للمشرف العام فقط لمقارنة صور وملفات المرضى ودمجها</small>
+                    <div class="card card-custom shadow-sm bg-white border-primary p-4">
+                        <h4 class="fw-bold text-primary mb-3">🔀 أداة دمج ملفات المرضى المتكررة ونقل السجلات الطبية</h4>
+                        <div class="alert alert-warning border-warning">
+                            <strong>⚠️ تنبيه هام:</strong> هذه العملية نهائية، ستقوم بنقل كافة الزيارات وتذاكر الكشف، الأشعة، الفحوصات، تقارير الليزر، العمليات، ومرفقات السكانر من الملف المكرر إلى الملف الأصلي، مع أرشفة الملف المكرر لمنع استخدامه مجدداً.
                         </div>
-                        <div class="card-body p-4">
-                            <div class="alert alert-warning border-warning" id="mergeAlertText">
-                                <strong>⚠️ تنبيه هام:</strong> هذه العملية نهائية، ستقوم بنقل كافة الزيارات وتذاكر الكشف، الأشعة، الفحوصات، تقارير الليزر، العمليات، ومرفقات السكانر من الملف المكرر إلى الملف الأصلي، مع أرشفة الملف المكرر لمنع استخدامه مجدداً.
-                            </div>
 
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <div class="merge-card-box border border-2 border-success shadow-sm">
-                                        <label class="form-label fw-bold text-success" id="lblMasterFile">1. كود الملف الأصلي الأساسي (Master File):*</label>
-                                        <div class="input-group mb-2">
-                                            <input type="number" id="txtMasterId" class="form-control fw-bold text-center fs-5 border-success" placeholder="مثال: 1" oninput="previewPatientForMerge('master')">
-                                            <button class="btn btn-success fw-bold" type="button" onclick="previewPatientForMerge('master')">فحص</button>
-                                        </div>
-                                        
-                                        <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
-                                            <img id="imgMasterPhoto" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>" class="merge-avatar-box shadow-sm" alt="Master Avatar">
-                                            <div>
-                                                <div id="previewMasterName" class="fw-bold text-dark fs-6">اسم المريض: --</div>
-                                                <small id="previewMasterDetails" class="text-muted d-block">الرقم القومي: -- | الهاتف: --</small>
-                                            </div>
-                                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="merge-card-box border border-2 border-success shadow-sm">
+                                    <label class="form-label fw-bold text-success">1. كود الملف الأصلي الأساسي (Master File):*</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" id="txtMasterId" class="form-control fw-bold text-center fs-5 border-success" placeholder="مثال: 1" oninput="previewPatientForMerge('master')">
+                                        <button class="btn btn-success fw-bold" type="button" onclick="previewPatientForMerge('master')">فحص</button>
                                     </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="merge-card-box border border-2 border-danger shadow-sm">
-                                        <label class="form-label fw-bold text-danger" id="lblDupFile">2. كود الملف المكرر المراد نقله وإلغاؤه (Duplicate File):*</label>
-                                        <div class="input-group mb-2">
-                                            <input type="number" id="txtDuplicateId" class="form-control fw-bold text-center fs-5 border-danger" placeholder="مثال: 2" oninput="previewPatientForMerge('duplicate')">
-                                            <button class="btn btn-danger fw-bold" type="button" onclick="previewPatientForMerge('duplicate')">فحص</button>
-                                        </div>
-
-                                        <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
-                                            <img id="imgDuplicatePhoto" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>" class="merge-avatar-box shadow-sm" alt="Duplicate Avatar">
-                                            <div>
-                                                <div id="previewDuplicateName" class="fw-bold text-danger fs-6">اسم المريض: --</div>
-                                                <small id="previewDuplicateDetails" class="text-muted d-block">الرقم القومي: -- | الهاتف: --</small>
-                                            </div>
+                                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
+                                        <img id="imgMasterPhoto" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>" class="merge-avatar-box shadow-sm" alt="Master Avatar">
+                                        <div>
+                                            <div id="previewMasterName" class="fw-bold text-dark fs-6">اسم المريض: --</div>
+                                            <small id="previewMasterDetails" class="text-muted d-block">الرقم القومي: -- | الهاتف: --</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="text-center">
-                                <button type="button" class="btn btn-danger btn-lg fw-bold px-5 py-3 shadow" onclick="executeMergePatients()" id="btnExecuteMerge">
-                                    🔀 بدء الدمج ونقل كل السجلات الطبية بالكامل
-                                </button>
+                            <div class="col-md-6">
+                                <div class="merge-card-box border border-2 border-danger shadow-sm">
+                                    <label class="form-label fw-bold text-danger">2. كود الملف المكرر المراد نقله وإلغاؤه (Duplicate File):*</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" id="txtDuplicateId" class="form-control fw-bold text-center fs-5 border-danger" placeholder="مثال: 2" oninput="previewPatientForMerge('duplicate')">
+                                        <button class="btn btn-danger fw-bold" type="button" onclick="previewPatientForMerge('duplicate')">فحص</button>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
+                                        <img id="imgDuplicatePhoto" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>" class="merge-avatar-box shadow-sm" alt="Duplicate Avatar">
+                                        <div>
+                                            <div id="previewDuplicateName" class="fw-bold text-danger fs-6">اسم المريض: --</div>
+                                            <small id="previewDuplicateDetails" class="text-muted d-block">الرقم القومي: -- | الهاتف: --</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="button" class="btn btn-danger btn-lg fw-bold px-5 py-3 shadow" onclick="executeMergePatients()" id="btnExecuteMerge">
+                                🔀 بدء الدمج ونقل كل السجلات الطبية بالكامل
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -695,190 +613,50 @@ html
 
     </div>
 
-    <!-- الفوتر الرسمي -->
-    <footer class="begol-footer">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-                <strong class="text-dark">👁️ نظام بيجول (Begol Eye System)</strong>
-                <span class="mx-1">•</span>
-                <span id="ftCenterName">مركز حبشي التخصصي للعيون</span>
-                <span class="mx-1">•</span>
-                <span class="text-muted" id="ftRights">جميع الحقوق محفوظة © 2026</span>
-            </div>
-            <div class="d-flex align-items-center">
-                <span class="me-2" id="ftDevBy">تم التطوير والبرمجة بواسطة:</span>
-                <span class="andy-badge">آندي (Andy)</span>
-            </div>
-        </div>
+    <footer class="begol-footer text-center">
+        <span>نظام بيجول لإدارة عيادات العيون (Begol Cloud) • جميع الحقوق محفوظة © 2026</span>
     </footer>
 
     <script>
+        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>";
+        let currentSrvFilter = 'الكل';
         let servicesData = [];
         let labsData = [];
         let medsData = [];
         let usersData = [];
         let insuranceData = [];
-        let currentSrvFilter = 'الكل';
         let currentLanguage = localStorage.getItem('begol_lang') || 'ar';
 
-        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'><path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/></svg>";
+        // محرك اتصال سوبابيز المباشر
+        const SUPABASE_URL = "https://ksykkuviuvmxrcxpkeur.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_8t_jecPepR1WfrPzbXCCKg_rIeQd2fg";
+        if (typeof db === 'undefined' || !db) {
+            window.db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+        }
 
-        const i18n = {
-            ar: {
-                pageTitle: 'مركز حبشي للعيون - لوحة تحكم مدير النظام (Begol)',
-                navCenterTitle: 'مركز حبشي التخصصي للعيون',
-                navSystemName: 'نظام بيجول (Begol) • لوحة الإدارة',
-                btnLangToggle: '🌐 English',
-                lblTabServices: 'الفحوصات والأسعار',
-                lblTabLabs: 'التحاليل الطبية',
-                lblTabMeds: 'الأدوية والقطرات',
-                lblTabUsers: 'المستخدمين والأطباء',
-                lblTabInsurance: 'شركات التأمين والتعاقدات',
-                lblTabMerge: 'دمج الملفات المتكررة',
-                lblPortals: 'الشاشات:',
-                btnRec: '🌐 الاستقبال',
-                btnDoc: '👨‍⚕️ عيادة الطبيب',
-                btnCall: '📞 الكول سنتر',
-                btnDil: '💧 القطرات',
-                btnQueue: '📺 الانتظار',
-                btnLogout: 'خروج 🚪',
-                srvFormTitle: '➕ تسعير خدمة / فحص جديد',
-                lblSrvCategory: 'القسم التابع له:*',
-                optCatClinics: '🏥 عيادات الكشف التخصصية',
-                optCatScans: '🔬 وحدة الفحوصات والأشعة',
-                optCatLaser: '⚡ وحدة الليزر والعلاج الضوئي',
-                optCatSurgery: '🏥 العمليات الجراحية',
-                lblClinicSpecialty: 'تخصص العيادة الدقيق:*',
-                lblVisitType: 'نوع الخدمة / الزيارة:*',
-                lblCustomName: 'المسمى الظاهر في الإيصال والتذكرة:*',
-                lblConsultPrice: 'سعر الكشف (ج.م):*',
-                lblFollowupPrice: 'سعر الاستشارة (ج.م):',
-                lblFollowupDays: 'صلاحية الاستشارة (أيام):',
-                lblInvSelect: 'اختر الفحص الطبي المعتمد:*',
-                lblLaserSelect: 'اختر نوع إجراء الليزر:*',
-                lblSurgerySelect: 'اختر العملية الجراحية المقررة:*',
-                lblSurgeryPrice: 'سعر وتكلفة العملية الإجمالية (ج.م):*',
-                lblSingleEyePrice: 'سعر عين واحدة (OD / OS):*',
-                lblBothEyesPrice: 'سعر كلتا العينين (OU):*',
-                btnDoublePrice: 'مضاعفة (×2)',
-                cur1: 'ج.م',
-                cur2: 'ج.م',
-                btnSrvNew: '➕ جديد',
-                btnSaveNewSrv: '💾 حفظ وتسعير',
-                btnUpdateSrv: '✏️ حفظ التعديل',
-                btnDeleteSrv: '🗑️ حذف',
-                srvTableTitle: '📋 قائمة الفحوصات والخدمات والعمليات المعتمدة',
-                fltAll: 'الكل',
-                fltClinics: 'عيادة الكشف',
-                fltInv: 'وحدة الفحوصات',
-                fltLaser: 'وحدة الليزر',
-                fltSurgery: 'العمليات',
-                btnRefreshSrv: '🔄 تحديث',
-                thDept: 'القسم',
-                thServiceName: 'اسم الخدمة / الفحص',
-                thPricing: 'التسعير المعتمد (ج.م)',
-                thDetails: 'تفاصيل وضوابط',
-                thActions: 'إجراءات',
-                labFormTitle: '➕ إضافة تحليل معملي جديد',
-                lblLabNameAr: 'اسم التحليل (عربي):*',
-                lblLabNameEn: 'اسم التحليل (إنجليزي - Lab Test EN):*',
-                lblLabCategory: 'التصنيف المعملي:',
-                lblLabNotes: 'شروط التحضير والإرشادات (صيام / عينة):',
-                btnLabNew: '➕ جديد',
-                btnSaveNewLab: '💾 حفظ التحليل',
-                btnUpdateLab: '✏️ حفظ التعديل',
-                btnDeleteLab: '🗑️ حذف',
-                labTableTitle: '🧪 قائمة التحاليل الطبية المعتمدة للعيادات والعمليات',
-                btnRefreshLabs: '🔄 تحديث',
-                ftCenterName: 'مركز حبشي التخصصي للعيون',
-                ftRights: 'جميع الحقوق محفوظة © 2026',
-                ftDevBy: 'تم التطوير والبرمجة بواسطة:'
-            },
-            en: {
-                pageTitle: 'Habashy Eye Center - Admin Dashboard (Begol)',
-                navCenterTitle: 'Habashy Specialized Eye Center',
-                navSystemName: 'Begol System • Admin Dashboard',
-                btnLangToggle: '🌐 عربي',
-                lblTabServices: 'Services & Pricing',
-                lblTabLabs: 'Laboratory Tests',
-                lblTabMeds: 'Medications & Drops',
-                lblTabUsers: 'Users & Doctors',
-                lblTabInsurance: 'Insurance & Contracts',
-                lblTabMerge: 'Merge Patient Files',
-                lblPortals: 'Portals:',
-                btnRec: '🌐 Reception',
-                btnDoc: '👨‍⚕️ Doctor',
-                btnCall: '📞 Call Center',
-                btnDil: '💧 Drops',
-                btnQueue: '📺 Queue',
-                btnLogout: 'Logout 🚪',
-                srvFormTitle: '➕ Add / Price New Service',
-                lblSrvCategory: 'Department:*',
-                optCatClinics: '🏥 Consultation Clinics',
-                optCatScans: '🔬 Diagnostic Scans Unit',
-                optCatLaser: '⚡ Retina & Laser Unit',
-                optCatSurgery: '🏥 Surgical Unit (OR)',
-                lblClinicSpecialty: 'Clinic Subspecialty:*',
-                lblVisitType: 'Visit Nature:*',
-                lblCustomName: 'Ticket & Receipt Name:*',
-                lblConsultPrice: 'Consultation Fee (EGP):*',
-                lblFollowupPrice: 'Follow-up Fee (EGP):',
-                lblFollowupDays: 'Follow-up Validity (Days):',
-                lblInvSelect: 'Select Standard Diagnostic Scan:*',
-                lblLaserSelect: 'Select Laser Procedure:*',
-                lblSurgerySelect: 'Select Surgical Procedure:*',
-                lblSurgeryPrice: 'Total Surgery Fee (EGP):*',
-                lblSingleEyePrice: 'Single Eye Fee (OD / OS):*',
-                lblBothEyesPrice: 'Both Eyes Package (OU):*',
-                btnDoublePrice: 'Double (×2)',
-                cur1: 'EGP',
-                cur2: 'EGP',
-                btnSrvNew: '➕ New',
-                btnSaveNewSrv: '💾 Save & Price',
-                btnUpdateSrv: '✏️ Save Changes',
-                btnDeleteSrv: '🗑️ Delete',
-                srvTableTitle: '📋 Approved Services, Scans & Surgeries',
-                fltAll: 'All',
-                fltClinics: 'Clinics',
-                fltInv: 'Scans',
-                fltLaser: 'Laser',
-                fltSurgery: 'Surgeries',
-                btnRefreshSrv: '🔄 Refresh',
-                thDept: 'Department',
-                thServiceName: 'Service / Procedure Name',
-                thPricing: 'Approved Pricing',
-                thDetails: 'Details & Terms',
-                thActions: 'Actions',
-                labFormTitle: '➕ Add New Lab Test',
-                lblLabNameAr: 'Test Name (Arabic):*',
-                lblLabNameEn: 'Test Name (English):*',
-                lblLabCategory: 'Lab Category:',
-                lblLabNotes: 'Preparation & Fasting Notes:',
-                btnLabNew: '➕ New',
-                btnSaveNewLab: '💾 Save Test',
-                btnUpdateLab: '✏️ Save Changes',
-                btnDeleteLab: '🗑️ Delete',
-                labTableTitle: '🧪 Approved Clinical Laboratory Tests',
-                btnRefreshLabs: '🔄 Refresh',
-                ftCenterName: 'Habashy Specialized Eye Center',
-                ftRights: 'All Rights Reserved © 2026',
-                ftDevBy: 'Developed & Engineered by:'
+        window.onload = async function() {
+            // قفل أمني: الشاشة للأدمن فقط وممنوعة لأي مستخدم آخر
+            const role = (sessionStorage.getItem('roleName') || '').toLowerCase();
+            const allowedScreens = (sessionStorage.getItem('allowedScreens') || '').toLowerCase();
+            const isAdmin = (role === 'admin' || allowedScreens === 'all' || allowedScreens.includes('admin'));
+
+            if (!isAdmin) {
+                alert('⛔ عذراً! هذه الشاشة مخصصة لمدير النظام (Admin) فقط ولا يمكنك الدخول إليها.');
+                window.location.href = allowedScreens.includes('reception') ? 'reception.html' : (allowedScreens.includes('doctor') ? 'doctor.html' : 'index.html');
+                return;
             }
-        };
 
-        window.onload = function() {
             document.getElementById('lblUserBadge').innerText = `👤 ${sessionStorage.getItem('fullName') || 'مدير النظام'} (Admin)`;
-            applyLanguage(currentLanguage);
-
             switchTab('services');
             onSrvCategoryChange();
             autoFillConsultationName();
 
-            loadServices();
-            loadLabTests();
-            loadMedications();
-            loadUsers();
-            loadInsurance();
+            // جلب البيانات من سوبابيز بالترتيب
+            await loadServices();
+            await loadLabTests();
+            await loadMedications();
+            await loadUsers();
+            await loadInsurance();
         };
 
         function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
@@ -886,33 +664,7 @@ html
         function toggleLanguage() {
             currentLanguage = (currentLanguage === 'ar') ? 'en' : 'ar';
             localStorage.setItem('begol_lang', currentLanguage);
-            applyLanguage(currentLanguage);
-        }
-
-        function applyLanguage(lang) {
-            const isAr = (lang === 'ar');
-            const htmlRoot = document.getElementById('htmlRoot');
-            const bootstrapCss = document.getElementById('bootstrapCss');
-
-            htmlRoot.setAttribute('lang', isAr ? 'ar' : 'en');
-            htmlRoot.setAttribute('dir', isAr ? 'rtl' : 'ltr');
-            bootstrapCss.href = isAr 
-                ? "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css"
-                : "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
-
-            const dict = i18n[lang];
-            if (dict) {
-                for (const [id, text] of Object.entries(dict)) {
-                    const el = document.getElementById(id);
-                    if (el) el.innerText = text;
-                }
-            }
-
-            renderServicesTable();
-            renderLabTable();
-            renderMedicationsTable();
-            renderUsersTable();
-            renderInsuranceTable();
+            location.reload();
         }
 
         function switchTab(tab) {
@@ -931,9 +683,9 @@ html
             document.getElementById('tabBtnMerge').classList.toggle('active', tab === 'merge');
         }
 
-        // ========================================================
+        // ==========================================
         // 1. الفحوصات والخدمات والعمليات
-        // ========================================================
+        // ==========================================
         function onSrvCategoryChange() {
             const cat = document.getElementById('srvCategory').value;
             document.getElementById('boxConsultationConfig').style.display = (cat === 'عيادة الكشف') ? 'block' : 'none';
@@ -950,8 +702,6 @@ html
             const visit = document.getElementById('srvVisitType').value;
             document.getElementById('srvConsultCustomName').value = `${visit} - ${spec}`;
         }
-
-        document.getElementById('srvClinicSpecialty').addEventListener('change', autoFillConsultationName);
 
         function onInvestigationSelect() {
             const val = document.getElementById('srvInvestigationList').value;
@@ -989,22 +739,26 @@ html
         async function loadServices() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('ClinicServices').select('*').eq('IsActive', true).order('ServiceID', { ascending: false });
-                if (!error && data) {
+                let { data, error } = await db.from('ClinicServices').select('*');
+                if (error || !data || data.length === 0) {
+                    const fallback = await db.from('services').select('*');
+                    if (fallback.data && fallback.data.length > 0) data = fallback.data;
+                }
+                if (data) {
                     servicesData = data.map(s => ({
-                        id: s.ServiceID,
-                        category: s.Category,
-                        name: s.ServiceName,
-                        price: s.Price,
-                        priceSingle: s.PriceSingle || s.Price,
-                        priceBoth: s.PriceBoth || (s.Price * 2),
-                        followupPrice: s.FollowupPrice || 0,
-                        followupDays: s.FollowupDays || 14,
-                        eyeSide: s.EyeSide || 'عام'
+                        id: s.ServiceID || s.serviceid || s.id || s.Id,
+                        category: s.Category || s.category || '',
+                        name: s.ServiceName || s.servicename || s.name || s.Name || '',
+                        price: s.Price ?? s.price ?? 0,
+                        priceSingle: s.PriceSingle ?? s.pricesingle ?? s.Price ?? s.price ?? 0,
+                        priceBoth: s.PriceBoth ?? s.priceboth ?? ((s.Price || s.price || 0) * 2),
+                        followupPrice: s.FollowupPrice ?? s.followupprice ?? 0,
+                        followupDays: s.FollowupDays ?? s.followupdays ?? 14,
+                        eyeSide: s.EyeSide || s.eyeside || 'عام'
                     }));
                     renderServicesTable();
                 }
-            } catch (err) { }
+            } catch (err) { console.error("Error in loadServices:", err); }
         }
 
         function renderServicesTable() {
@@ -1014,27 +768,17 @@ html
             let list = servicesData;
             if (currentSrvFilter !== 'الكل') list = list.filter(s => s.category === currentSrvFilter);
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">${currentLanguage === 'ar' ? 'لا توجد خدمات مسجلة في هذا القسم.' : 'No services found.'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">لا توجد خدمات مسجلة في هذا القسم. اضغط "حفظ وتسعير" للإضافة.</td></tr>`;
                 return;
             }
             list.forEach(s => {
-                const isConsult = (s.category === 'عيادة الكشف');
-                const isSurgery = (s.category === 'وحدة العمليات');
-
                 let priceHtml = '';
-                let detailsHtml = '';
-
-                if (isConsult) {
-                    priceHtml = `<span class="fw-bold text-success fs-6">${s.price || 0} ${currentLanguage === 'ar' ? 'ج.م' : 'EGP'}</span>`;
-                    detailsHtml = `<span class="badge bg-light text-dark border">${currentLanguage === 'ar' ? 'استشارة' : 'Followup'}: ${s.followupPrice || 0} (${s.followupDays || 14} ${currentLanguage === 'ar' ? 'يوم' : 'Days'})</span>`;
-                } else if (isSurgery) {
-                    priceHtml = `<span class="fw-bold text-primary fs-6">${s.price || 0} ${currentLanguage === 'ar' ? 'ج.م' : 'EGP'}</span>`;
-                    detailsHtml = `<span class="badge bg-success">${currentLanguage === 'ar' ? 'عملية جراحية معتمدة' : 'Approved Surgery'}</span>`;
+                if (s.category === 'عيادة الكشف') {
+                    priceHtml = `<span class="fw-bold text-success fs-6">${s.price || 0} ج.م</span>`;
+                } else if (s.category === 'وحدة العمليات') {
+                    priceHtml = `<span class="fw-bold text-primary fs-6">${s.price || 0} ج.م</span>`;
                 } else {
-                    const priceS = s.priceSingle || s.price || 0;
-                    const priceB = s.priceBoth || (priceS * 2);
-                    priceHtml = `<div class="d-flex justify-content-center gap-2"><span class="badge bg-info text-dark p-2">${currentLanguage === 'ar' ? 'عين' : 'Single'}: ${priceS}</span><span class="badge bg-warning text-dark p-2">${currentLanguage === 'ar' ? 'عينين' : 'Both'}: ${priceB}</span></div>`;
-                    detailsHtml = `<span class="badge bg-light text-secondary border">${s.category}</span>`;
+                    priceHtml = `<div class="d-flex justify-content-center gap-1"><span class="badge bg-info text-dark p-2">عين: ${s.priceSingle}</span><span class="badge bg-warning text-dark p-2">عينين: ${s.priceBoth}</span></div>`;
                 }
 
                 tbody.innerHTML += `
@@ -1042,10 +786,10 @@ html
                         <td><span class="badge bg-secondary badge-dept">${s.category}</span></td>
                         <td class="fw-bold text-dark text-start ps-3">${s.name}</td>
                         <td>${priceHtml}</td>
-                        <td>${detailsHtml}</td>
+                        <td><span class="badge bg-light text-dark border">مفعل بالسحاب</span></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editService(${s.id})">✏️ ${currentLanguage === 'ar' ? 'تعديل' : 'Edit'}</button>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteService(${s.id})">🗑️ ${currentLanguage === 'ar' ? 'حذف' : 'Delete'}</button>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editService(${s.id})">✏️ تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteService(${s.id})">🗑️ حذف</button>
                         </td>
                     </tr>`;
             });
@@ -1074,10 +818,10 @@ html
                 price = parseFloat(document.getElementById('srvSurgeryPrice').value || 0);
             }
 
-            if (!name) { alert('اسم الخدمة أو العملية مطلوب!'); return; }
+            if (!name) { alert('اسم الخدمة مطلوب!'); return; }
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
-            let payload = {
+            const payload = {
                 Category: category,
                 ServiceName: name,
                 Price: price,
@@ -1089,28 +833,22 @@ html
                 IsActive: true
             };
 
-            if (db) {
-                let error = null;
-                if (isUpdate) {
-                    const res = await db.from('ClinicServices').update(payload).eq('ServiceID', editId);
-                    error = res.error;
-                } else {
-                    const res = await db.from('ClinicServices').insert([payload]);
-                    error = res.error;
-                }
-
-                if (!error) {
-                    alert('✅ تم الحفظ بنجاح في سوبابيز');
-                    resetSrvForm();
-                    loadServices();
-                } else {
-                    alert('خطأ أثناء الحفظ: ' + error.message);
-                }
+            let res;
+            if (isUpdate) {
+                res = await db.from('ClinicServices').update(payload).eq('ServiceID', editId);
+            } else {
+                res = await db.from('ClinicServices').insert([payload]);
             }
+
+            if (res.error) { alert('خطأ أثناء حفظ الخدمة: ' + res.error.message); return; }
+
+            alert(isUpdate ? '✅ تم تعديل الخدمة بنجاح!' : '✅ تم حفظ وتسعير الخدمة بنجاح!');
+            resetSrvForm();
+            await loadServices();
         }
 
         function editService(id) {
-            const s = servicesData.find(x => x.id === id);
+            const s = servicesData.find(x => x.id == id);
             if (!s) return;
             document.getElementById('srvEditId').value = s.id;
             document.getElementById('srvCategory').value = s.category;
@@ -1123,12 +861,16 @@ html
                 document.getElementById('srvFollowupDays').value = s.followupDays || 14;
             } else if (s.category === 'وحدة العمليات') {
                 document.getElementById('srvSurgeryPrice').value = s.price || 0;
+                document.getElementById('srvSurgeryList').value = s.name;
             } else {
                 document.getElementById('srvPriceSingle').value = s.priceSingle || s.price || 0;
                 document.getElementById('srvPriceBoth').value = s.priceBoth || ((s.price || 0) * 2);
             }
 
-            document.getElementById('srvFormTitle').innerText = `✏️ ${currentLanguage === 'ar' ? 'تعديل: ' : 'Edit: '} ${s.name}`;
+            document.getElementById('srvFormTitle').innerText = `✏️ تعديل: ${s.name}`;
+            document.getElementById('srvBadgeStatus').className = 'badge bg-warning text-dark';
+            document.getElementById('srvBadgeStatus').innerText = 'وضع تعديل';
+
             document.getElementById('btnSaveNewSrv').style.display = 'none';
             document.getElementById('btnUpdateSrv').style.display = 'inline-block';
             document.getElementById('btnDeleteSrv').style.display = 'inline-block';
@@ -1136,19 +878,19 @@ html
 
         function resetSrvForm() {
             document.getElementById('srvEditId').value = '0';
-            document.getElementById('srvCategory').value = 'عيادة الكشف';
             document.getElementById('srvConsultPrice').value = '300';
-            document.getElementById('srvSurgeryPrice').value = '6000';
             document.getElementById('srvPriceSingle').value = '';
             document.getElementById('srvPriceBoth').value = '';
-            document.getElementById('divCustomInvName').style.display = 'none';
-            document.getElementById('divCustomLaserName').style.display = 'none';
-            document.getElementById('divCustomSurgeryName').style.display = 'none';
-
+            document.getElementById('srvCustomInvInput').value = '';
+            document.getElementById('srvCustomLaserInput').value = '';
+            document.getElementById('srvCustomSurgeryInput').value = '';
+            document.getElementById('srvConsultCustomName').value = '';
             onSrvCategoryChange();
-            autoFillConsultationName();
 
-            document.getElementById('srvFormTitle').innerText = currentLanguage === 'ar' ? '➕ تسعير خدمة / فحص جديد' : '➕ Price New Service';
+            document.getElementById('srvFormTitle').innerText = '➕ تسعير خدمة / فحص جديد';
+            document.getElementById('srvBadgeStatus').className = 'badge bg-success';
+            document.getElementById('srvBadgeStatus').innerText = 'وضع إضافة';
+
             document.getElementById('btnSaveNewSrv').style.display = 'inline-block';
             document.getElementById('btnUpdateSrv').style.display = 'none';
             document.getElementById('btnDeleteSrv').style.display = 'none';
@@ -1156,26 +898,28 @@ html
 
         async function deleteService(id) {
             if (!confirm('حذف هذه الخدمة نهائياً من قاعدة البيانات؟')) return;
-            if (db) {
-                const { error } = await db.from('ClinicServices').delete().eq('ServiceID', id);
-                if (!error) { resetSrvForm(); loadServices(); }
-            }
+            await db.from('ClinicServices').delete().eq('ServiceID', id);
+            await loadServices();
         }
 
-        // ========================================================
-        // 2. دوال التحاليل الطبية (Lab Tests)
-        // ========================================================
+        // ==========================================
+        // 2. التحاليل الطبية (LabTests)
+        // ==========================================
         async function loadLabTests() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('LabTests').select('*').eq('IsActive', true).order('Id', { ascending: false });
-                if (!error && data) {
+                let { data, error } = await db.from('LabTests').select('*');
+                if (error || !data || data.length === 0) {
+                    const fallback = await db.from('lab_tests').select('*');
+                    if (fallback.data) data = fallback.data;
+                }
+                if (data) {
                     labsData = data.map(l => ({
-                        id: l.Id,
-                        nameAr: l.NameAr,
-                        nameEn: l.NameEn,
-                        category: l.Category,
-                        notes: l.Notes
+                        id: l.Id || l.id,
+                        nameAr: l.NameAr || l.nameAr || l.name_ar || '',
+                        nameEn: l.NameEn || l.nameEn || l.name_en || '-',
+                        category: l.Category || l.category || 'عام',
+                        notes: l.Notes || l.notes || '-'
                     }));
                     renderLabTable();
                 }
@@ -1187,19 +931,19 @@ html
             if (!tbody) return;
             tbody.innerHTML = '';
             if (labsData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">${currentLanguage === 'ar' ? 'لا توجد تحاليل مسجلة حتى الآن.' : 'No lab tests found.'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">لا توجد تحاليل مسجلة حتى الآن</td></tr>`;
                 return;
             }
-            labsData.forEach(lab => {
+            labsData.forEach(l => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="fw-bold text-dark text-start ps-3">${lab.nameAr}</td>
-                        <td class="text-primary fw-bold">${lab.nameEn || '-'}</td>
-                        <td><span class="badge bg-info text-dark">${lab.category || 'عام'}</span></td>
-                        <td class="small text-muted">${lab.notes || '-'}</td>
+                        <td class="fw-bold text-dark text-start ps-3">${l.nameAr}</td>
+                        <td class="text-primary fw-bold">${l.nameEn}</td>
+                        <td><span class="badge bg-info text-dark">${l.category}</span></td>
+                        <td class="small text-muted">${l.notes}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editLabTest(${lab.id})">✏️ ${currentLanguage === 'ar' ? 'تعديل' : 'Edit'}</button>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteLabTest(${lab.id})">🗑️ ${currentLanguage === 'ar' ? 'حذف' : 'Delete'}</button>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editLabTest(${l.id})">✏️ تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteLabTest(${l.id})">🗑️ حذف</button>
                         </td>
                     </tr>`;
             });
@@ -1209,44 +953,44 @@ html
             const editId = parseInt(document.getElementById('labEditId').value || '0');
             const nameAr = document.getElementById('labNameAr').value.trim();
             const nameEn = document.getElementById('labNameEn').value.trim();
-            const category = document.getElementById('labCategory').value;
-            const notes = document.getElementById('labNotes').value.trim();
+            if (!nameAr) { alert('اسم التحليل بالعربي مطلوب!'); return; }
 
-            if (!nameAr || !nameEn) { alert('يرجى كتابة اسم التحليل بالعربي والإنجليزي بدقة!'); return; }
-
-            const payload = { NameAr: nameAr, NameEn: nameEn, Category: category, Notes: notes, IsActive: true };
             const isUpdate = (mode === 'UPDATE' && editId > 0);
+            const payload = {
+                NameAr: nameAr,
+                NameEn: nameEn,
+                Category: document.getElementById('labCategory').value,
+                Notes: document.getElementById('labNotes').value.trim(),
+                IsActive: true
+            };
 
-            if (db) {
-                let error = null;
-                if (isUpdate) {
-                    const res = await db.from('LabTests').update(payload).eq('Id', editId);
-                    error = res.error;
-                } else {
-                    const res = await db.from('LabTests').insert([payload]);
-                    error = res.error;
-                }
-
-                if (!error) {
-                    alert('✅ تم حفظ التحليل بنجاح بسوبابيز');
-                    resetLabForm();
-                    loadLabTests();
-                } else {
-                    alert('خطأ: ' + error.message);
-                }
+            let res;
+            if (isUpdate) {
+                res = await db.from('LabTests').update(payload).eq('Id', editId);
+            } else {
+                res = await db.from('LabTests').insert([payload]);
             }
+
+            if (res.error) { alert('خطأ أثناء الحفظ: ' + res.error.message); return; }
+
+            alert(isUpdate ? '✅ تم تعديل التحليل بنجاح!' : '✅ تم حفظ التحليل الطبي بنجاح بالسحاب!');
+            resetLabForm();
+            await loadLabTests();
         }
 
         function editLabTest(id) {
-            const lab = labsData.find(x => x.id === id);
-            if (!lab) return;
-            document.getElementById('labEditId').value = lab.id;
-            document.getElementById('labNameAr').value = lab.nameAr;
-            document.getElementById('labNameEn').value = lab.nameEn || '';
-            document.getElementById('labCategory').value = lab.category || 'تحاليل عامة';
-            document.getElementById('labNotes').value = lab.notes || '';
+            const l = labsData.find(x => x.id == id);
+            if (!l) return;
+            document.getElementById('labEditId').value = l.id;
+            document.getElementById('labNameAr').value = l.nameAr;
+            document.getElementById('labNameEn').value = l.nameEn;
+            document.getElementById('labCategory').value = l.category;
+            document.getElementById('labNotes').value = l.notes;
 
-            document.getElementById('labFormTitle').innerText = `✏️ تعديل: ${lab.nameAr}`;
+            document.getElementById('labFormTitle').innerText = `✏️ تعديل: ${l.nameAr}`;
+            document.getElementById('labBadgeStatus').className = 'badge bg-warning text-dark';
+            document.getElementById('labBadgeStatus').innerText = 'وضع تعديل';
+
             document.getElementById('btnSaveNewLab').style.display = 'none';
             document.getElementById('btnUpdateLab').style.display = 'inline-block';
             document.getElementById('btnDeleteLab').style.display = 'inline-block';
@@ -1256,82 +1000,96 @@ html
             document.getElementById('labEditId').value = '0';
             document.getElementById('labNameAr').value = '';
             document.getElementById('labNameEn').value = '';
-            document.getElementById('labCategory').value = 'تحاليل عامة';
             document.getElementById('labNotes').value = '';
 
-            document.getElementById('labFormTitle').innerText = currentLanguage === 'ar' ? '➕ إضافة تحليل معملي جديد' : '➕ Add New Lab Test';
+            document.getElementById('labFormTitle').innerText = '➕ إضافة تحليل معملي جديد';
+            document.getElementById('labBadgeStatus').className = 'badge bg-success';
+            document.getElementById('labBadgeStatus').innerText = 'وضع إضافة';
+
             document.getElementById('btnSaveNewLab').style.display = 'inline-block';
             document.getElementById('btnUpdateLab').style.display = 'none';
             document.getElementById('btnDeleteLab').style.display = 'none';
         }
 
         async function deleteLabTest(id) {
-            if (!confirm('هل تريد حذف هذا التحليل نهائياً؟')) return;
-            if (db) {
-                const { error } = await db.from('LabTests').delete().eq('Id', id);
-                if (!error) { resetLabForm(); loadLabTests(); }
-            }
+            if (!confirm('حذف هذا التحليل نهائياً؟')) return;
+            await db.from('LabTests').delete().eq('Id', id);
+            await loadLabTests();
         }
 
-        // ========================================================
-        // 3. دوال الأدوية والقطرات
-        // ========================================================
+        // ==========================================
+        // 3. الأدوية والقطرات (Medications)
+        // ==========================================
         async function loadMedications() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('Medications').select('*').eq('IsActive', true).order('MedicationID', { ascending: false });
-                if (!error && data) {
+                let { data, error } = await db.from('Medications').select('*');
+                if (error || !data || data.length === 0) {
+                    const fallback = await db.from('medications').select('*');
+                    if (fallback.data) data = fallback.data;
+                }
+                if (data) {
                     medsData = data.map(m => ({
-                        id: m.MedicationID,
-                        name: m.TradeName,
-                        category: m.Category,
-                        defaultDose: m.DefaultDose,
-                        instructions: m.Instructions
+                        id: m.MedicationID || m.medicationid || m.id,
+                        name: m.TradeName || m.tradename || m.name || '',
+                        category: m.Category || m.category || '-',
+                        defaultDose: m.DefaultDose || m.defaultdose || '-',
+                        instructions: m.Instructions || m.instructions || '-'
                     }));
                     renderMedicationsTable();
                 }
-            } catch (e) { }
+            } catch (err) { }
         }
 
         function renderMedicationsTable() {
             const tbody = document.getElementById('medTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
+            if (medsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">لا توجد أدوية مسجلة</td></tr>`;
+                return;
+            }
             medsData.forEach(m => {
-                const mId = m.id;
-                tbody.innerHTML += `<tr><td class="fw-bold">${m.name}</td><td>${m.category||'-'}</td><td>${m.defaultDose||'-'}</td><td>${m.instructions||'-'}</td><td><button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editMedication(${mId})">✏️ ${currentLanguage === 'ar' ? 'تعديل' : 'Edit'}</button><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteMedication(${mId})">🗑️ ${currentLanguage === 'ar' ? 'حذف' : 'Delete'}</button></td></tr>`;
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold text-dark text-start ps-3">${m.name}</td>
+                        <td>${m.category}</td>
+                        <td>${m.defaultDose}</td>
+                        <td>${m.instructions}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editMedication(${m.id})">✏️ تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteMedication(${m.id})">🗑️ حذف</button>
+                        </td>
+                    </tr>`;
             });
         }
 
         async function saveMedication(mode) {
             const editId = parseInt(document.getElementById('medEditId').value || '0');
             const name = document.getElementById('medTradeName').value.trim();
-            if (!name) { alert('اسم الدواء مطلوب!'); return; }
-            const payload = { 
-                TradeName: name, 
-                Category: document.getElementById('medCategory').value.trim(), 
-                DefaultDose: document.getElementById('medDefaultDose').value.trim(), 
+            if (!name) { alert('اسم الدواء التجاري مطلوب!'); return; }
+
+            const isUpdate = (mode === 'UPDATE' && editId > 0);
+            const payload = {
+                TradeName: name,
+                Category: document.getElementById('medCategory').value.trim(),
+                DefaultDose: document.getElementById('medDefaultDose').value.trim(),
                 Instructions: document.getElementById('medInstructions').value.trim(),
                 IsActive: true
             };
-            const isUpdate = (mode === 'UPDATE' && editId > 0);
 
-            if (db) {
-                let error = null;
-                if (isUpdate) {
-                    const res = await db.from('Medications').update(payload).eq('MedicationID', editId);
-                    error = res.error;
-                } else {
-                    const res = await db.from('Medications').insert([payload]);
-                    error = res.error;
-                }
-
-                if (!error) {
-                    alert('✅ تم حفظ الدواء بنجاح');
-                    resetMedForm();
-                    loadMedications();
-                }
+            let res;
+            if (isUpdate) {
+                res = await db.from('Medications').update(payload).eq('MedicationID', editId);
+            } else {
+                res = await db.from('Medications').insert([payload]);
             }
+
+            if (res.error) { alert('خطأ: ' + res.error.message); return; }
+
+            alert(isUpdate ? '✅ تم تعديل الدواء بنجاح!' : '✅ تم حفظ الدواء بنجاح في سوبابيز');
+            resetMedForm();
+            await loadMedications();
         }
 
         function editMedication(id) {
@@ -1339,9 +1097,14 @@ html
             if (!m) return;
             document.getElementById('medEditId').value = m.id;
             document.getElementById('medTradeName').value = m.name;
-            document.getElementById('medCategory').value = m.category || '';
-            document.getElementById('medDefaultDose').value = m.defaultDose || '';
-            document.getElementById('medInstructions').value = m.instructions || '';
+            document.getElementById('medCategory').value = m.category;
+            document.getElementById('medDefaultDose').value = m.defaultDose;
+            document.getElementById('medInstructions').value = m.instructions;
+
+            document.getElementById('medFormTitle').innerText = `✏️ تعديل: ${m.name}`;
+            document.getElementById('medBadgeStatus').className = 'badge bg-warning text-dark';
+            document.getElementById('medBadgeStatus').innerText = 'وضع تعديل';
+
             document.getElementById('btnSaveNewMed').style.display = 'none';
             document.getElementById('btnUpdateMed').style.display = 'inline-block';
             document.getElementById('btnDeleteMed').style.display = 'inline-block';
@@ -1353,87 +1116,113 @@ html
             document.getElementById('medCategory').value = '';
             document.getElementById('medDefaultDose').value = '';
             document.getElementById('medInstructions').value = '';
+
+            document.getElementById('medFormTitle').innerText = '➕ إضافة دواء / قطرة جديدة';
+            document.getElementById('medBadgeStatus').className = 'badge bg-success';
+            document.getElementById('medBadgeStatus').innerText = 'وضع إضافة';
+
             document.getElementById('btnSaveNewMed').style.display = 'inline-block';
             document.getElementById('btnUpdateMed').style.display = 'none';
             document.getElementById('btnDeleteMed').style.display = 'none';
         }
 
         async function deleteMedication(id) {
-            if (!confirm('حذف هذا الدواء نهائياً؟')) return;
-            if (db) {
-                const { error } = await db.from('Medications').delete().eq('MedicationID', id);
-                if (!error) { resetMedForm(); loadMedications(); }
-            }
+            if (!confirm('حذف هذا الدواء؟')) return;
+            await db.from('Medications').delete().eq('MedicationID', id);
+            await loadMedications();
         }
 
-        // ========================================================
-        // 4. دوال المستخدمين
-        // ========================================================
+        // ==========================================
+        // 4. المستخدمين والأطباء والصلاحيات (Users)
+        // ==========================================
+        function checkRoleDoctor() {
+            const role = document.getElementById('uRoleName').value.toLowerCase();
+            document.getElementById('doctorScopeBox').style.display = ['consultant','specialist','resident'].includes(role) ? 'block' : 'none';
+        }
+
         async function loadUsers() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('Users').select('*, Roles(RoleName)').eq('IsActive', true).order('UserID', { ascending: false });
-                if (!error && data) {
+                let { data, error } = await db.from('Users').select('*, Roles(RoleName)');
+                if (error || !data || data.length === 0) {
+                    const fallback = await db.from('users').select('*');
+                    if (fallback.data) data = fallback.data;
+                }
+                if (data) {
                     usersData = data.map(u => ({
-                        id: u.UserID,
-                        username: u.Username,
-                        fullName: u.FullName,
-                        roleName: u.Roles?.RoleName || 'Consultant',
-                        doctorScope: u.DoctorScope || 'كشوفات وفحوصات',
-                        title: u.Notes || '',
-                        allowedScreens: u.AllowedScreens || 'all'
+                        id: u.UserID || u.userid || u.id,
+                        username: u.Username || u.username,
+                        fullName: u.FullName || u.fullname || u.name,
+                        roleName: u.Roles?.RoleName || u.RoleName || u.roleName || 'Consultant',
+                        doctorScope: u.DoctorScope || u.doctorscope || '-',
+                        title: u.Notes || u.notes || '',
+                        allowedScreens: u.AllowedScreens || u.allowedscreens || 'all'
                     }));
                     renderUsersTable();
                 }
-            } catch (e) { }
+            } catch (err) { }
         }
 
         function renderUsersTable() {
             const tbody = document.getElementById('userTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
+            if (usersData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-muted py-4">لا يوجد مستخدمين مسجلين</td></tr>`;
+                return;
+            }
             usersData.forEach(u => {
-                const uId = u.id;
-                const screens = u.allowedScreens || 'all';
+                const scr = u.allowedScreens || 'all';
+                let screensBadges = '';
+                if (scr === 'all') {
+                    screensBadges = '<span class="badge bg-success">✨ كل الشاشات</span>';
+                } else {
+                    let list = [];
+                    if (scr.includes('reception')) list.push('<span class="badge bg-light text-primary border">🌐 الاستقبال</span>');
+                    if (scr.includes('doctor')) list.push('<span class="badge bg-light text-success border">👨‍⚕️ الطبيب</span>');
+                    if (scr.includes('callcenter')) list.push('<span class="badge bg-light text-info border">📞 الكول سنتر</span>');
+                    if (scr.includes('accounting')) list.push('<span class="badge bg-light text-warning text-dark border">💰 الحسابات</span>');
+                    if (scr.includes('admin')) list.push('<span class="badge bg-light text-danger border">🛡️ الإدارة</span>');
+                    screensBadges = list.join(' ');
+                }
+
                 tbody.innerHTML += `
                     <tr>
-                        <td class="fw-bold">${u.username}</td>
-                        <td>${u.fullName}</td>
+                        <td class="fw-bold font-monospace">${u.username}</td>
+                        <td class="fw-bold text-start ps-3">${u.fullName}</td>
                         <td><span class="badge bg-primary">${u.roleName}</span></td>
-                        <td>${u.doctorScope||'-'}</td>
-                        <td><small class="badge bg-light text-dark border">${screens}</small></td>
+                        <td>${u.doctorScope}</td>
+                        <td><div class="d-flex flex-wrap justify-content-center gap-1">${screensBadges}</div></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editUser(${uId})">✏️ تعديل</button>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteUser(${uId})">🗑️ حذف</button>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editUser(${u.id})">✏️ تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteUser(${u.id})">🗑️ حذف</button>
                         </td>
                     </tr>`;
             });
         }
 
-        function checkRoleDoctor() {
-            const role = document.getElementById('uRoleName').value.toLowerCase();
-            document.getElementById('doctorScopeBox').style.display = ['consultant','specialist','resident'].includes(role) ? 'block' : 'none';
-        }
-
         async function saveUser(mode) {
             const editId = parseInt(document.getElementById('userEditId').value || '0');
             const username = document.getElementById('uUsername').value.trim();
-            const fullName = document.getElementById('uFullName').value.trim();
             const password = document.getElementById('uPassword').value.trim();
-            if (!fullName || !username) { alert('الاسم واسم الدخول مطلوبان!'); return; }
+            const fullName = document.getElementById('uFullName').value.trim();
+            const roleName = document.getElementById('uRoleName').value;
 
-            let allowedScreensList = [];
-            if (document.getElementById('chkScrReception').checked) allowedScreensList.push('reception');
-            if (document.getElementById('chkScrDoctor').checked) allowedScreensList.push('doctor');
-            if (document.getElementById('chkScrCall').checked) allowedScreensList.push('callcenter');
-            if (document.getElementById('chkScrAccounting').checked) allowedScreensList.push('accounting');
-            if (document.getElementById('chkScrAdmin').checked) allowedScreensList.push('admin');
-            const allowedScreens = allowedScreensList.join(',');
+            if (!username || !fullName) { alert('اسم الدخول والاسم بالكامل مطلوبان!'); return; }
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
-            
-            const { data: r } = await db.from('Roles').select('RoleID').eq('RoleName', document.getElementById('uRoleName').value).single();
+            if (!isUpdate && !password) { alert('كلمة المرور مطلوبة للمستخدم الجديد!'); return; }
 
+            let allowedList = [];
+            if (document.getElementById('chkScrReception').checked) allowedList.push('reception');
+            if (document.getElementById('chkScrDoctor').checked) allowedList.push('doctor');
+            if (document.getElementById('chkScrCall').checked) allowedList.push('callcenter');
+            if (document.getElementById('chkScrAccounting').checked) allowedList.push('accounting');
+            if (document.getElementById('chkScrAdmin').checked) allowedList.push('admin');
+            const allowedScreens = allowedList.join(',');
+
+            const { data: r } = await db.from('Roles').select('RoleID').eq('RoleName', roleName).single();
+            
             let payload = { 
                 Username: username, 
                 FullName: fullName, 
@@ -1445,32 +1234,28 @@ html
             };
             if (password) payload.PasswordHash = password;
 
-            if (db) {
-                let error = null;
-                if (isUpdate) {
-                    const res = await db.from('Users').update(payload).eq('UserID', editId);
-                    error = res.error;
-                } else {
-                    const res = await db.from('Users').insert([payload]);
-                    error = res.error;
-                }
-
-                if (!error) {
-                    alert('✅ تم حفظ بيانات المستخدم بنجاح');
-                    resetUserForm();
-                    loadUsers();
-                } else {
-                    alert('خطأ: ' + error.message);
-                }
+            let res;
+            if (isUpdate) {
+                res = await db.from('Users').update(payload).eq('UserID', editId);
+            } else {
+                res = await db.from('Users').insert([payload]);
             }
+
+            if (res.error) { alert('خطأ أثناء حفظ المستخدم بسوبابيز: ' + res.error.message); return; }
+
+            alert(isUpdate ? '✅ تم تعديل بيانات المستخدم بنجاح!' : '✅ تم حفظ بيانات المستخدم الجديد بنجاح بالسحاب!');
+            resetUserForm();
+            await loadUsers();
         }
 
         function editUser(id) {
             const u = usersData.find(x => x.id == id);
             if (!u) return;
+
             document.getElementById('userEditId').value = u.id;
             document.getElementById('uUsername').value = u.username;
             document.getElementById('uFullName').value = u.fullName;
+            document.getElementById('uPassword').value = '';
             document.getElementById('uRoleName').value = u.roleName;
             document.getElementById('uDoctorScope').value = u.doctorScope || 'كشوفات وفحوصات';
             document.getElementById('uTitle').value = u.title || '';
@@ -1483,6 +1268,10 @@ html
             document.getElementById('chkScrAccounting').checked = (screens === 'all' || screens.includes('accounting'));
             document.getElementById('chkScrAdmin').checked = (screens === 'all' || screens.includes('admin'));
 
+            document.getElementById('userFormTitle').innerText = `✏️ تعديل صلاحيات: ${u.fullName}`;
+            document.getElementById('userBadgeStatus').className = 'badge bg-warning text-dark';
+            document.getElementById('userBadgeStatus').innerText = 'وضع تعديل';
+
             document.getElementById('btnSaveNewUser').style.display = 'none';
             document.getElementById('btnUpdateUser').style.display = 'inline-block';
             document.getElementById('btnDeleteUser').style.display = 'inline-block';
@@ -1491,9 +1280,10 @@ html
         function resetUserForm() {
             document.getElementById('userEditId').value = '0';
             document.getElementById('uUsername').value = '';
-            document.getElementById('uFullName').value = '';
             document.getElementById('uPassword').value = '';
+            document.getElementById('uFullName').value = '';
             document.getElementById('uTitle').value = '';
+            document.getElementById('uRoleName').value = 'Consultant';
             checkRoleDoctor();
 
             document.getElementById('chkScrReception').checked = true;
@@ -1502,33 +1292,39 @@ html
             document.getElementById('chkScrAccounting').checked = false;
             document.getElementById('chkScrAdmin').checked = false;
 
+            document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم / طبيب جديد';
+            document.getElementById('userBadgeStatus').className = 'badge bg-success';
+            document.getElementById('userBadgeStatus').innerText = 'وضع إضافة';
+
             document.getElementById('btnSaveNewUser').style.display = 'inline-block';
             document.getElementById('btnUpdateUser').style.display = 'none';
             document.getElementById('btnDeleteUser').style.display = 'none';
         }
 
         async function deleteUser(id) {
-            if (!confirm('حذف هذا المستخدم؟')) return;
-            if (db) {
-                const { error } = await db.from('Users').delete().eq('UserID', id);
-                if (!error) { resetUserForm(); loadUsers(); }
-            }
+            if (!confirm('حذف هذا المستخدم نهائياً؟')) return;
+            await db.from('Users').delete().eq('UserID', id);
+            await loadUsers();
         }
 
-        // ========================================================
-        // 5. شركات التأمين
-        // ========================================================
+        // ==========================================
+        // 5. شركات التأمين (MasterInsurance)
+        // ==========================================
         async function loadInsurance() {
             if (!db) return;
             try {
-                const { data, error } = await db.from('MasterInsurance').select('*').eq('IsActive', true).order('Id', { ascending: false });
-                if (!error && data) {
+                let { data, error } = await db.from('MasterInsurance').select('*');
+                if (error || !data || data.length === 0) {
+                    const fallback = await db.from('masterinsurance').select('*');
+                    if (fallback.data) data = fallback.data;
+                }
+                if (data) {
                     insuranceData = data.map(i => ({
-                        id: i.Id,
-                        nameAr: i.NameAr,
-                        nameEn: i.NameEn,
-                        defaultCopay: i.DefaultCopay,
-                        notes: i.Notes
+                        id: i.Id || i.id,
+                        nameAr: i.NameAr || i.nameAr || i.name_ar,
+                        nameEn: i.NameEn || i.nameEn || i.name_en || '-',
+                        defaultCopay: i.DefaultCopay || i.defaultcopay || '10%',
+                        notes: i.Notes || i.notes || '-'
                     }));
                     renderInsuranceTable();
                 }
@@ -1539,16 +1335,20 @@ html
             const tbody = document.getElementById('insTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            insuranceData.forEach(ins => {
+            if (insuranceData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-muted py-4">لا توجد شركات تأمين مسجلة</td></tr>`;
+                return;
+            }
+            insuranceData.forEach(i => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="fw-bold text-dark text-start ps-3">${ins.nameAr}</td>
-                        <td class="text-muted">${ins.nameEn || '-'}</td>
-                        <td><span class="badge bg-success fs-6">${ins.defaultCopay}</span></td>
-                        <td class="small text-muted">${ins.notes || '-'}</td>
+                        <td class="fw-bold text-dark text-start ps-3">${i.nameAr}</td>
+                        <td>${i.nameEn}</td>
+                        <td><span class="badge bg-success">${i.defaultCopay}</span></td>
+                        <td class="small text-muted">${i.notes}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editInsurance(${ins.id})">✏️ تعديل</button>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteInsurance(${ins.id})">🗑️ حذف</button>
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="editInsurance(${i.id})">✏️ تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteInsurance(${i.id})">🗑️ حذف</button>
                         </td>
                     </tr>`;
             });
@@ -1557,43 +1357,45 @@ html
         async function saveInsurance(mode) {
             const editId = parseInt(document.getElementById('insEditId').value || '0');
             const nameAr = document.getElementById('insNameAr').value.trim();
-            const nameEn = document.getElementById('insNameEn').value.trim() || nameAr;
-            const defaultCopay = document.getElementById('insDefaultCopay').value.trim() || '10%';
-            const notes = document.getElementById('insNotes').value.trim();
-
+            const nameEn = document.getElementById('insNameEn').value.trim();
             if (!nameAr) { alert('اسم شركة التأمين مطلوب!'); return; }
 
             const isUpdate = (mode === 'UPDATE' && editId > 0);
-            const payload = { NameAr: nameAr, NameEn: nameEn, DefaultCopay: defaultCopay, Notes: notes, IsActive: true };
+            const payload = {
+                NameAr: nameAr,
+                NameEn: nameEn || nameAr,
+                DefaultCopay: document.getElementById('insDefaultCopay').value.trim() || '10%',
+                Notes: document.getElementById('insNotes').value.trim(),
+                IsActive: true
+            };
 
-            if (db) {
-                let error = null;
-                if (isUpdate) {
-                    const res = await db.from('MasterInsurance').update(payload).eq('Id', editId);
-                    error = res.error;
-                } else {
-                    const res = await db.from('MasterInsurance').insert([payload]);
-                    error = res.error;
-                }
-
-                if (!error) {
-                    alert('✅ تم حفظ شركة التأمين بنجاح');
-                    resetInsForm();
-                    loadInsurance();
-                }
+            let res;
+            if (isUpdate) {
+                res = await db.from('MasterInsurance').update(payload).eq('Id', editId);
+            } else {
+                res = await db.from('MasterInsurance').insert([payload]);
             }
+
+            if (res.error) { alert('خطأ أثناء الحفظ: ' + res.error.message); return; }
+
+            alert(isUpdate ? '✅ تم تعديل شركة التأمين بنجاح!' : '✅ تم حفظ شركة التأمين بنجاح');
+            resetInsForm();
+            await loadInsurance();
         }
 
         function editInsurance(id) {
-            const ins = insuranceData.find(x => x.id == id);
-            if (!ins) return;
-            document.getElementById('insEditId').value = ins.id;
-            document.getElementById('insNameAr').value = ins.nameAr;
-            document.getElementById('insNameEn').value = ins.nameEn || '';
-            document.getElementById('insDefaultCopay').value = ins.defaultCopay || '10%';
-            document.getElementById('insNotes').value = ins.notes || '';
+            const i = insuranceData.find(x => x.id == id);
+            if (!i) return;
+            document.getElementById('insEditId').value = i.id;
+            document.getElementById('insNameAr').value = i.nameAr;
+            document.getElementById('insNameEn').value = i.nameEn;
+            document.getElementById('insDefaultCopay').value = i.defaultCopay;
+            document.getElementById('insNotes').value = i.notes;
 
-            document.getElementById('insFormTitle').innerText = `✏️ تعديل: ${ins.nameAr}`;
+            document.getElementById('insFormTitle').innerText = `✏️ تعديل: ${i.nameAr}`;
+            document.getElementById('insBadgeStatus').className = 'badge bg-warning text-dark';
+            document.getElementById('insBadgeStatus').innerText = 'وضع تعديل';
+
             document.getElementById('btnSaveNewIns').style.display = 'none';
             document.getElementById('btnUpdateIns').style.display = 'inline-block';
             document.getElementById('btnDeleteIns').style.display = 'inline-block';
@@ -1603,10 +1405,12 @@ html
             document.getElementById('insEditId').value = '0';
             document.getElementById('insNameAr').value = '';
             document.getElementById('insNameEn').value = '';
-            document.getElementById('insDefaultCopay').value = '10%';
             document.getElementById('insNotes').value = '';
 
             document.getElementById('insFormTitle').innerText = '➕ إضافة جهة / شركة تأمين';
+            document.getElementById('insBadgeStatus').className = 'badge bg-success';
+            document.getElementById('insBadgeStatus').innerText = 'وضع إضافة';
+
             document.getElementById('btnSaveNewIns').style.display = 'inline-block';
             document.getElementById('btnUpdateIns').style.display = 'none';
             document.getElementById('btnDeleteIns').style.display = 'none';
@@ -1614,36 +1418,44 @@ html
 
         async function deleteInsurance(id) {
             if (!confirm('حذف شركة التأمين؟')) return;
-            if (db) {
-                const { error } = await db.from('MasterInsurance').delete().eq('Id', id);
-                if (!error) { resetInsForm(); loadInsurance(); }
-            }
+            await db.from('MasterInsurance').delete().eq('Id', id);
+            await loadInsurance();
         }
 
-        // ========================================================
-        // 6. دمج ملفات المرضى
-        // ========================================================
+        // ==========================================
+        // 6. دمج الملفات المتكررة (معاينة بالصورة والبيانات)
+        // ==========================================
         async function previewPatientForMerge(type) {
             const inputId = type === 'master' ? document.getElementById('txtMasterId').value : document.getElementById('txtDuplicateId').value;
             const nameDiv = type === 'master' ? document.getElementById('previewMasterName') : document.getElementById('previewDuplicateName');
             const detailsDiv = type === 'master' ? document.getElementById('previewMasterDetails') : document.getElementById('previewDuplicateDetails');
             const imgEl = type === 'master' ? document.getElementById('imgMasterPhoto') : document.getElementById('imgDuplicatePhoto');
             
-            if (!inputId || inputId <= 0 || !db) {
+            if (!inputId || inputId <= 0) {
                 nameDiv.innerText = 'اسم المريض: --';
                 detailsDiv.innerText = 'الرقم القومي: -- | الهاتف: --';
                 imgEl.src = defaultAvatar;
                 return;
             }
 
-            const { data, error } = await db.from('Patients').select('*').eq('PatientID', parseInt(inputId)).single();
-            if (!error && data) {
-                nameDiv.innerText = data.FullName;
-                detailsDiv.innerText = `بطاقة: ${data.NationalID || 'بدون'} | هاتف: ${data.Mobile1 || 'بدون'} | سن: ${data.Age || '--'}`;
-                imgEl.src = data.PhotoData ? data.PhotoData : defaultAvatar;
-            } else {
-                nameDiv.innerText = '❌ مريض غير موجود!';
-                detailsDiv.innerText = 'تأكد من كود الملف الصحيح';
+            try {
+                let { data, error } = await db.from('Patients').select('*').eq('PatientID', parseInt(inputId)).single();
+                if (error || !data) {
+                    const fallback = await db.from('patients').select('*').eq('PatientID', parseInt(inputId)).single();
+                    if (fallback.data) data = fallback.data;
+                }
+
+                if (data) {
+                    nameDiv.innerText = `اسم المريض: ${data.FullName || data.fullname}`;
+                    detailsDiv.innerText = `بطاقة: ${data.NationalID || data.nationalid || 'بدون'} | هاتف: ${data.Mobile1 || data.mobile1 || 'بدون'} | سن: ${data.Age || data.age || '--'}`;
+                    imgEl.src = (data.PhotoData || data.photodata) ? (data.PhotoData || data.photodata) : defaultAvatar;
+                } else {
+                    nameDiv.innerText = '❌ مريض غير موجود!';
+                    detailsDiv.innerText = 'تأكد من كود الملف الصحيح';
+                    imgEl.src = defaultAvatar;
+                }
+            } catch (e) {
+                nameDiv.innerText = '❌ مريض غير موجود';
                 imgEl.src = defaultAvatar;
             }
         }
@@ -1659,17 +1471,19 @@ html
 
             if (!confirm(`⚠️ تأكيد أمني نهائي:\nهل أنت متأكد من دمج كل سجلات الملف (#${dupId}) ونقلها للملف (#${masterId}) وأرشفة الملف المكرر؟`)) return;
 
-            if (db) {
+            try {
                 await db.from('Appointments').update({ PatientID: masterId }).eq('PatientID', dupId);
                 await db.from('PatientQueue').update({ PatientID: masterId }).eq('PatientID', dupId);
                 await db.from('PatientAttachments').update({ PatientID: masterId }).eq('PatientID', dupId);
                 await db.from('Patients').update({ FullName: 'مدمج [محذوف]', IsDeleted: 1, NationalID: null, Mobile1: null }).eq('PatientID', dupId);
 
-                alert('✅ تم تنفيذ الدمج بنجاح ونقل كافة السجلات الطبية وأرشفة الملف المكرر في سوبابيز!');
+                alert('✅ تم تنفيذ الدمج بنجاح ونقل كافة السجلات الطبية بالسحاب!');
                 document.getElementById('txtMasterId').value = '';
                 document.getElementById('txtDuplicateId').value = '';
                 previewPatientForMerge('master');
                 previewPatientForMerge('duplicate');
+            } catch (err) {
+                alert('خطأ أثناء الدمج: ' + err.message);
             }
         }
     </script>
