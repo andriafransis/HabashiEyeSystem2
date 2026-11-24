@@ -1,41 +1,50 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="htmlRoot">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">مركز حبشي للعيون - نظام بيجول (الكول سنتر)</title>
+    <title>مركز حبشي للعيون - الكول سنتر وحجز المواعيد</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
-    <script src="js/auth-guard.js"></script>
     <style>
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .top-navbar { background-color: #ffffff; border-bottom: 2px solid #e2e8f0; }
-        .portal-btn { font-weight: 600; border-radius: 8px; margin: 0 2px; font-size: 0.85rem; }
-        .slot-card { cursor: pointer; transition: 0.2s; border: 2px solid #cbd5e1; border-radius: 8px; text-align: center; padding: 12px; background: #fff; }
-        .slot-card:hover { border-color: #2563eb; background: #f0f7ff; }
-        .slot-card.booked { background: #fee2e2; border-color: #fca5a5; cursor: not-allowed; }
-        .slot-card.selected { border-color: #16a34a !important; border-width: 3px !important; }
-        .patient-history-box { background: #f1f5f9; border-radius: 8px; padding: 10px; font-size: 0.85rem; max-height: 140px; overflow-y: auto; border: 1px solid #cbd5e1; }
+        .nav-btn { font-weight: bold; border-radius: 8px; margin: 0 4px; }
+        .nav-btn.active { background-color: #0284c7 !important; color: white !important; }
+        .slot-btn { width: 95px; height: 45px; font-weight: bold; border-radius: 8px; margin: 4px; font-size: 0.95rem; }
+        .slot-available { background-color: #f0fdf4; border: 2px solid #22c55e; color: #15803d; }
+        .slot-available:hover { background-color: #22c55e; color: #fff; }
+        .slot-booked { background-color: #fef2f2; border: 2px solid #ef4444; color: #b91c1c; cursor: not-allowed; }
+        .slot-selected { background-color: #0284c7 !important; color: #fff !important; border-color: #0369a1 !important; }
         .begol-footer { margin-top: auto; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 12px 20px; font-size: 0.85rem; color: #64748b; }
-        .andy-badge { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
+        .andy-badge { background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
     </style>
+
+    <!-- الربط المباشر مع سوبابيز وحارس الأمان -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabaseClient.js"></script>
+    <script src="/js/auth-guard.js"></script>
 </head>
 <body>
 
+    <!-- البار العلوي -->
     <nav class="top-navbar py-2 px-4 shadow-sm mb-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center">
                 <span class="fs-4 me-2 text-info">📞</span>
                 <div>
                     <h5 class="m-0 fw-bold text-dark">مركز حبشي التخصصي للعيون</h5>
-                    <small class="text-info fw-bold" style="font-size: 0.75rem;">نظام بيجول (Begol) • حجز المواعيد والكول سنتر</small>
+                    <small class="text-info fw-bold" style="font-size: 0.75rem;">نظام بيجول • الكول سنتر وجدولة العيادات</small>
                 </div>
             </div>
 
+            <!-- التبديل بين الحجز وجدولة العيادات داخل نفس الصفحة -->
+            <div class="d-flex align-items-center">
+                <button id="btnTabBooking" class="btn btn-outline-info nav-btn active" onclick="switchCallTab('booking')">📞 استقبال المكالمات وحجز المواعيد</button>
+                <button id="btnTabSchedule" class="btn btn-outline-info nav-btn" onclick="switchCallTab('schedule')">⚙️ فتح وجدولة مواعيد العيادات والسعة</button>
+            </div>
+
             <div class="d-flex align-items-center gap-2">
-                <a href="reception.html" class="btn btn-outline-primary btn-sm portal-btn">🌐 الاستقبال</a>
-                <a href="doctor.html" class="btn btn-outline-success btn-sm portal-btn">👨‍⚕️ عيادة الطبيب</a>
+                <a href="/reception.html" class="btn btn-outline-success btn-sm fw-bold">👥 الاستقبال</a>
                 <span id="lblUserBadge" class="badge bg-light text-dark border p-2">👤 المستخدم: ...</span>
                 <button class="btn btn-sm btn-outline-danger fw-bold" onclick="logout()">خروج 🚪</button>
             </div>
@@ -43,231 +52,382 @@
     </nav>
 
     <div class="container-fluid px-4 flex-grow-1">
-        <div class="row g-3">
-            
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white fw-bold text-primary py-3">📞 استقبال المكالمة وحجز الموعد للمريض</div>
-                    <div class="card-body">
+        
+        <!-- 1. شاشة استقبال المكالمات وحجز المواعيد بالتليفون -->
+        <div id="viewBooking">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <div class="card shadow-sm border-0 bg-white p-3">
+                        <h5 class="fw-bold text-info border-bottom pb-2 mb-3">📞 بيانات المتصل وحجز الموعد:</h5>
                         
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold text-primary">بحث برقم الهاتف المتصل (Caller Phone):*</label>
-                            <div class="input-group input-group-sm mb-1">
-                                <input type="text" id="txtCallSearchPhone" class="form-control fw-bold" placeholder="01xxxxxxxxx" onkeypress="if(event.key==='Enter') searchPatientByPhone()">
-                                <button class="btn btn-primary fw-bold" onclick="searchPatientByPhone()">🔍 بحث</button>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">رقم هاتف المتصل:*</label>
+                            <div class="input-group">
+                                <input type="text" id="callerPhone" class="form-control" placeholder="01xxxxxxxxx" onkeypress="if(event.key==='Enter') searchCaller()">
+                                <button class="btn btn-info text-white fw-bold" type="button" onclick="searchCaller()">بحث برقم الهاتف</button>
                             </div>
-                            <select id="cmbCallPatientResult" class="form-select form-select-sm fw-bold text-success" size="3" onchange="onCallPatientSelected()">
-                                <option value="">-- اختر مريضاً من نتائج البحث --</option>
-                            </select>
-                            <input type="hidden" id="selectedCallPatientId" value="0">
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">اسم المريض:</label>
-                            <input type="text" id="callPatientName" class="form-control form-control-sm bg-light fw-bold" placeholder="اسم المريض...">
+                            <label class="form-label small fw-bold">اسم المريض:*</label>
+                            <input type="text" id="patientName" class="form-control" placeholder="اسم المريض بالكامل">
                         </div>
 
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">رقم المحمول:</label>
-                            <input type="text" id="callPatientMobile" class="form-control form-control-sm bg-light" placeholder="01xxxxxxxxx">
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold text-secondary">📂 سجل زيارات المريض السابقة:</label>
-                            <div id="patientPreviousHistoryBox" class="patient-history-box text-muted">لم يتم اختيار مريض بعد...</div>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">اختر الطبيب المعالج:*</label>
-                            <select id="callDoctorSelect" class="form-select form-select-sm fw-bold text-primary" onchange="loadDoctorSlots()">
-                                <option value="">-- اختر الطبيب --</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">تاريخ الحجز المطلوب:*</label>
-                            <input type="date" id="callBookingDate" class="form-control form-control-sm fw-bold" onchange="loadDoctorSlots()">
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">العيادة / التوجيه:*</label>
-                            <select id="callClinicType" class="form-select form-select-sm fw-bold">
-                                <option value="عيادة الكشف">عيادة الكشف (كشف / استشارة)</option>
-                                <option value="وحدة الفحوصات">استقبال وحدة الفحوصات والأشعة</option>
-                                <option value="وحدة الليزر">استقبال وحدة الليزر والشبكية</option>
-                            </select>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">القسم / العيادة:*</label>
+                                <select id="cmbDept" class="form-select" onchange="loadSlots()">
+                                    <option value="عيادة الكشف">عيادة الكشف</option>
+                                    <option value="وحدة الفحوصات">وحدة الفحوصات</option>
+                                    <option value="وحدة الليزر">وحدة الليزر</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">الطبيب المعالج:*</label>
+                                <select id="cmbDoc" class="form-select fw-bold text-primary" onchange="loadSlots()"></select>
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">ملاحظات الكول سنتر:</label>
-                            <input type="text" id="callNotes" class="form-control form-control-sm" placeholder="أعراض، حجز تليفوني...">
+                            <label class="form-label small fw-bold">تاريخ الموعد المطلوب:*</label>
+                            <input type="date" id="bookDate" class="form-control fw-bold" onchange="loadSlots()">
                         </div>
 
-                        <button class="btn btn-success w-100 fw-bold py-2 shadow-sm" onclick="confirmSlotBooking()">💾 تثبيت وحجز الموعد بالسوبابيز</button>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-primary">الموعد والوقت المختار:*</label>
+                            <input type="text" id="selectedSlotText" class="form-control fw-bold text-center fs-5 text-success bg-light" readonly placeholder="اضغط على الميعاد المتاح من اليمين">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">ملاحظات الحجز:</label>
+                            <textarea id="bookNotes" class="form-control" rows="2" placeholder="ملاحظات الشكوى أو الميعاد..."></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-success w-100 fw-bold py-2 shadow-sm" onclick="confirmPhoneBooking()">
+                            💾 تأكيد وحفظ الحجز بالسحاب
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                        <span>⏰ خريطة مواعيد الطبيب بالساعة (Slot Dispatcher)</span>
-                        <span id="lblCapacityStatus" class="badge bg-info text-dark px-3 py-2">المواعيد المتاحة</span>
-                    </div>
-                    <div class="card-body" style="max-height: 72vh; overflow-y: auto;">
-                        <div id="slotsGridContainer" class="row g-2">
-                            <div class="text-muted text-center py-5">يرجى اختيار الطبيب وتاريخ الحجز لعرض المواعيد</div>
+                <!-- شبكة المواعيد المتاحة والمحجوزة (Slots Dispatcher) -->
+                <div class="col-md-7">
+                    <div class="card shadow-sm border-0 bg-white p-3">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                            <h5 class="fw-bold text-dark m-0">⏰ خريطة مواعيد العيادة والسعة المتاحة:</h5>
+                            <span id="capacityBadge" class="badge bg-primary fs-6 px-3 py-2">السعة: -- / --</span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 mb-3 small">
+                            <span><span class="badge bg-success p-2 me-1"> </span> ميعاد متاح للحجز</span>
+                            <span><span class="badge bg-danger p-2 me-1"> </span> ميعاد محجوز مسبقاً</span>
+                        </div>
+
+                        <div id="slotsContainer" class="d-flex flex-wrap p-2 border rounded bg-light" style="min-height: 300px; max-height: 55vh; overflow-y: auto;">
+                            <div class="text-muted text-center py-5 w-100">اختر الطبيب وتاريخ اليوم لعرض المواعيد المتاحة</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 2. شاشة فتح وجدولة مواعيد وسعة العيادات (المشرف مدمج هنا) -->
+        <div id="viewSchedule" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm border-0 bg-white p-4">
+                        <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">⚙️ فتح جلسة وجدولة عيادة جديدة وتحديد السعة القصوى:</h5>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">القسم الرئيسي:*</label>
+                                <select id="schDept" class="form-select fw-bold">
+                                    <option value="عيادة الكشف">عيادات الكشف التخصصية</option>
+                                    <option value="وحدة الفحوصات">وحدة الفحوصات والأشعة</option>
+                                    <option value="وحدة الليزر">وحدة الليزر والشبكية</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">الطبيب المعالج / المسؤول:*</label>
+                                <select id="schDoc" class="form-select fw-bold text-primary"></select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">تاريخ الجلسة / العيادة:*</label>
+                                <input type="date" id="schDate" class="form-control fw-bold">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">التخصص الدقيق:</label>
+                                <input type="text" id="schSpec" class="form-control" placeholder="عيادة عيون عامة / شبكية">
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded border mb-3">
+                            <h6 class="fw-bold text-success border-bottom pb-2 mb-2">📊 تحديد حصص وأعداد الحالات المسموح بحجزها (Quota):</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">عدد الكشف الجديد:</label>
+                                    <input type="number" id="schMaxNew" class="form-control text-center fw-bold fs-5 text-success" value="15">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">عدد حالات الاستشارة:</label>
+                                    <input type="number" id="schMaxFollow" class="form-control text-center fw-bold fs-5 text-primary" value="10">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">عدد الفحوصات / الليزر:</label>
+                                    <input type="number" id="schMaxScans" class="form-control text-center fw-bold fs-5 text-warning" value="20">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary w-100 fw-bold py-2 shadow-sm" onclick="saveClinicSchedule()">
+                            💾 اعتماد ونشر العيادة بسوبابيز لبدء استقبال المكالمات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <footer class="begol-footer text-center">نظام بيجول لإدارة مراكز العيون (Begol) • جميع الحقوق محفوظة © 2026</footer>
+    <!-- الفوتر الرسمي -->
+    <footer class="begol-footer">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <strong class="text-dark">👁️ نظام بيجول (Begol Eye System)</strong>
+                <span class="mx-1">•</span>
+                <span>مركز حبشي التخصصي للعيون</span>
+                <span class="mx-1">•</span>
+                <span class="text-muted">جميع الحقوق محفوظة © 2026</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-2">تم التطوير والبرمجة بواسطة:</span>
+                <span class="andy-badge">آندي (Andy)</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        let currentPatientId = 0;
         let selectedTimeSlot = '';
 
-        window.onload = function() {
-            document.getElementById('lblUserBadge').innerText = `👤 ${sessionStorage.getItem('fullName') || 'موظف كول سنتر'} (CallCenter)`;
-            document.getElementById('callBookingDate').valueAsDate = new Date();
-            loadDoctorsList();
+        window.onload = async function() {
+            document.getElementById('lblUserBadge').innerText = `👤 ${sessionStorage.getItem('fullName') || 'كول سنتر'}`;
+            
+            // ضبط تاريخ اليوم تلقائياً
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookDate').value = today;
+            document.getElementById('schDate').value = today;
+
+            await loadDoctors();
+            await loadSlots();
         };
 
-        async function loadDoctorsList() {
-            if (!db) return;
-            const { data } = await db.from('users').select('fullName, title').in('roleName', ['Consultant', 'Specialist', 'Resident']);
-            const sel = document.getElementById('callDoctorSelect');
-            sel.innerHTML = '<option value="">-- اختر الطبيب --</option>';
-            (data || []).forEach(d => {
-                sel.innerHTML += `<option value="${d.fullName}">د. ${d.fullName} (${d.title || 'طبيب عيون'})</option>`;
-            });
+        function logout() { sessionStorage.clear(); window.location.href = '/index.html'; }
+
+        function switchCallTab(tab) {
+            document.getElementById('viewBooking').style.display = (tab === 'booking') ? 'block' : 'none';
+            document.getElementById('viewSchedule').style.display = (tab === 'schedule') ? 'block' : 'none';
+
+            document.getElementById('btnTabBooking').classList.toggle('active', tab === 'booking');
+            document.getElementById('btnTabSchedule').classList.toggle('active', tab === 'schedule');
         }
 
-        async function searchPatientByPhone() {
-            const phone = document.getElementById('txtCallSearchPhone').value.trim();
-            if (!phone || !db) return;
+        async function loadDoctors() {
+            try {
+                const { data } = await db.from('Users').select('*, Roles(RoleName)').eq('IsActive', true);
+                const docs = (data || []).filter(u => ['doctor', 'consultant', 'resident', 'specialist'].includes((u.Roles?.RoleName || '').toLowerCase()));
+                
+                const sel1 = document.getElementById('cmbDoc');
+                const sel2 = document.getElementById('schDoc');
+                sel1.innerHTML = '';
+                sel2.innerHTML = '';
 
-            const { data } = await db.from('patients').select('*').ilike('mobile', `%${phone}%`).eq('isArchived', false);
-            const sel = document.getElementById('cmbCallPatientResult');
-            sel.innerHTML = '';
+                docs.forEach(d => {
+                    sel1.innerHTML += `<option value="${d.FullName}">د. ${d.FullName}</option>`;
+                    sel2.innerHTML += `<option value="${d.FullName}">د. ${d.FullName}</option>`;
+                });
+            } catch (e) { }
+        }
 
-            if (!data || data.length === 0) {
-                sel.innerHTML = '<option value="">(لم يتم العثور على مريض - يرجى تسجيله)</option>';
-                document.getElementById('patientPreviousHistoryBox').innerHTML = 'مريض جديد غير مسجل مسبقاً.';
-                return;
+        async function searchCaller() {
+            const phone = document.getElementById('callerPhone').value.trim();
+            if (!phone) { alert('اكتب رقم الهاتف للبحث!'); return; }
+
+            const { data } = await db.from('Patients').select('PatientID, FullName').eq('Mobile1', phone).limit(1);
+            if (data && data.length > 0) {
+                currentPatientId = data[0].PatientID;
+                document.getElementById('patientName').value = data[0].FullName;
+                alert(`✅ تم العثور على ملف المريض: ${data[0].FullName} (كود: #${data[0].PatientID})`);
+            } else {
+                currentPatientId = 0;
+                alert('هذا الرقم غير مسجل، يرجى كتابة اسم المريض لحجز ميعاد له وسيتم فتح ملف له تلقائياً.');
             }
-
-            data.forEach(p => {
-                sel.innerHTML += `<option value="${p.patientId}" data-name="${p.fullName}" data-mobile="${p.mobile}">${p.fullName} (هاتف: ${p.mobile}) - كود #${p.patientId}</option>`;
-            });
-
-            sel.selectedIndex = 0;
-            onCallPatientSelected();
         }
 
-        async function onCallPatientSelected() {
-            const sel = document.getElementById('cmbCallPatientResult');
-            const opt = sel.options[sel.selectedIndex];
-            if (!opt || !opt.value) return;
+        // جلب خريطة المواعيد والسعة المتاحة لليوم مباشرة من سوبابيز
+        async function loadSlots() {
+            const docName = document.getElementById('cmbDoc').value;
+            const date = document.getElementById('bookDate').value;
+            const container = document.getElementById('slotsContainer');
+            if (!docName || !date) return;
 
-            const pId = opt.value;
-            document.getElementById('selectedCallPatientId').value = pId;
-            document.getElementById('callPatientName').value = opt.dataset.name;
-            document.getElementById('callPatientMobile').value = opt.dataset.mobile;
+            container.innerHTML = '<div class="text-center py-4 w-100">جاري تحميل المواعيد...</div>';
 
-            if (db) {
-                const { data } = await db.from('visits').select('*').eq('patientId', pId).order('visitId', { ascending: false });
-                const historyBox = document.getElementById('patientPreviousHistoryBox');
-                if (data && data.length > 0) {
-                    let histHtml = '<ul class="m-0 ps-3">';
-                    data.forEach(h => {
-                        histHtml += `<li><b>${h.visitDate}</b>: ${h.diagnosis || 'كشف عيون'}</li>`;
-                    });
-                    histHtml += '</ul>';
-                    historyBox.innerHTML = histHtml;
-                } else {
-                    historyBox.innerHTML = 'لا توجد زيارات سابقة مسجلة (هذا المريض كشف جديد).';
+            try {
+                // 1. جلب السعة المقررة للعيادة من جدول الجداول
+                const { data: sch } = await db.from('DoctorDailySchedules')
+                    .select('*')
+                    .eq('DoctorName', docName)
+                    .eq('ScheduleDate', date)
+                    .limit(1);
+
+                const maxCapacity = (sch && sch.length > 0) 
+                    ? ((sch[0].MaxNewConsultations || 15) + (sch[0].MaxFollowups || 10)) 
+                    : 25;
+
+                // 2. جلب المواعيد المحجوزة في هذا اليوم
+                const { data: appts } = await db.from('Appointments')
+                    .select('AppointmentDate, Status, Notes')
+                    .gte('AppointmentDate', `${date}T00:00:00`)
+                    .lte('AppointmentDate', `${date}T23:59:59`);
+
+                const bookedTimes = new Set();
+                (appts || []).forEach(a => {
+                    if (a.AppointmentDate) {
+                        bookedTimes.add(a.AppointmentDate.split('T')[1].substring(0, 5));
+                    }
+                });
+
+                document.getElementById('capacityBadge').innerText = `الحجوزات: ${bookedTimes.size} / ${maxCapacity}`;
+
+                // 3. رسم سلوتات المواعيد بنظام كل 20 دقيقة (من 4 عصراً إلى 10 مساءً)
+                container.innerHTML = '';
+                const startHour = 16;
+                const endHour = 22;
+
+                for (let h = startHour; h < endHour; h++) {
+                    for (let m = 0; m < 60; m += 20) {
+                        const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                        const isBooked = bookedTimes.has(timeStr);
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = `slot-btn ${isBooked ? 'slot-booked' : 'slot-available'}`;
+                        btn.innerText = timeStr;
+
+                        if (isBooked) {
+                            btn.disabled = true;
+                            btn.title = 'محجوز مسبقاً';
+                        } else {
+                            btn.onclick = () => selectSlot(timeStr, btn);
+                        }
+                        container.appendChild(btn);
+                    }
                 }
+            } catch (e) {
+                container.innerHTML = '<div class="text-danger text-center py-4 w-100">خطأ في جلب المواعيد من سوبابيز</div>';
             }
         }
 
-        async function loadDoctorSlots() {
-            const docName = document.getElementById('callDoctorSelect').value;
-            const dateVal = document.getElementById('callBookingDate').value;
-            const container = document.getElementById('slotsGridContainer');
+        function selectSlot(timeStr, btn) {
+            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('slot-selected'));
+            btn.classList.add('slot-selected');
+            selectedTimeSlot = timeStr;
+            document.getElementById('selectedSlotText').value = `${document.getElementById('bookDate').value} الساعة ${timeStr}`;
+        }
 
-            if (!docName || !dateVal) {
-                container.innerHTML = '<div class="text-muted text-center py-5">يرجى اختيار الطبيب وتاريخ الحجز أولاً</div>';
-                return;
-            }
+        // تأكيد وحفظ الحجز الهاتفي في سوبابيز
+        async function confirmPhoneBooking() {
+            const name = document.getElementById('patientName').value.trim();
+            const phone = document.getElementById('callerPhone').value.trim();
+            const date = document.getElementById('bookDate').value;
+            const docName = document.getElementById('cmbDoc').value;
+            const dept = document.getElementById('cmbDept').value;
+            const notes = document.getElementById('bookNotes').value.trim();
 
-            // جلب الحجوزات القائمة من سوبابيز
-            let bookedTimes = [];
-            if (db) {
-                const { data } = await db.from('bookings').select('timeSlot, patientName').eq('doctorName', docName).eq('date', dateVal);
-                bookedTimes = data || [];
-            }
+            if (!name || !phone) { alert('اسم المريض ورقم الهاتف مطلوبان!'); return; }
+            if (!selectedTimeSlot) { alert('يرجى اختيار ميعاد متاح من الخريطة أولاً!'); return; }
 
-            container.innerHTML = '';
-            const slots = ["04:00 م", "04:30 م", "05:00 م", "05:30 م", "06:00 م", "06:30 م", "07:00 م", "07:30 م", "08:00 م", "08:30 م"];
-
-            slots.forEach(time => {
-                const isBooked = bookedTimes.find(b => b.timeSlot === time);
-                let cardClass = 'slot-card col-md-3';
-                let badgeHtml = '<span class="badge bg-success">متاح (Available)</span>';
-                let clickAction = `onclick="selectSlot('${time}', this)"`;
-
-                if (isBooked) {
-                    cardClass += ' booked';
-                    badgeHtml = `<span class="badge bg-danger">محجوز: ${isBooked.patientName}</span>`;
-                    clickAction = `onclick="alert('هذا الموعد محجوز مسبقاً!')"`;
+            try {
+                // لو المريض مش مسجل، نفتحه ملف مبدئي فوراً
+                let pid = currentPatientId;
+                if (!pid) {
+                    const { data: newP, error: pErr } = await db.from('Patients').insert([{
+                        FirstNameAr: name.split(' ')[0] || name,
+                        FullName: name,
+                        Mobile1: phone,
+                        CreatedBy: 'كول سنتر'
+                    }]).select('PatientID').single();
+                    if (pErr) throw pErr;
+                    pid = newP.PatientID;
                 }
 
-                container.innerHTML += `
-                    <div class="col-md-3">
-                        <div class="${cardClass}" ${clickAction}>
-                            <h5 class="fw-bold m-0 text-dark">⏰ ${time}</h5>
-                            <div class="mt-2">${badgeHtml}</div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function selectSlot(time, card) {
-            selectedTimeSlot = time;
-            document.querySelectorAll('.slot-card').forEach(el => el.classList.remove('selected'));
-            card.classList.add('selected');
-        }
-
-        async function confirmSlotBooking() {
-            const patientId = parseInt(document.getElementById('selectedCallPatientId').value || '0');
-            const patientName = document.getElementById('callPatientName').value.trim();
-            const mobile = document.getElementById('callPatientMobile').value.trim();
-            const doctorName = document.getElementById('callDoctorSelect').value;
-            const date = document.getElementById('callBookingDate').value;
-            const clinic = document.getElementById('callClinicType').value;
-            const notes = document.getElementById('callNotes').value.trim();
-
-            if (!patientName || !doctorName || !date || !selectedTimeSlot) {
-                alert('يرجى اختيار المريض، الطبيب، التاريخ، والموعد بدقة!');
-                return;
-            }
-
-            if (db) {
-                const { error } = await db.from('bookings').insert([{
-                    patientId, patientName, mobile, clinic, doctorName, date, timeSlot: selectedTimeSlot, notes
+                // حفظ الموعد المحجوز
+                const fullDateTime = `${date}T${selectedTimeSlot}:00`;
+                const { error: apptErr } = await db.from('Appointments').insert([{
+                    PatientID: pid,
+                    ServiceType: `${dept} - د. ${docName}`,
+                    AppointmentDate: fullDateTime,
+                    Status: 'Booked',
+                    Source: 'كول سنتر',
+                    Notes: `حجز تليفوني: ${name} (${phone}) | ${notes}`
                 }]);
 
-                if (error) {
-                    alert('خطأ: ' + error.message);
+                if (apptErr) throw apptErr;
+
+                alert(`✅ تم تأكيد حجز الموعد بنجاح للمريض (${name})\nالميعاد: ${date} الساعة ${selectedTimeSlot}\nمع د. ${docName}`);
+                
+                document.getElementById('selectedSlotText').value = '';
+                selectedTimeSlot = '';
+                document.getElementById('bookNotes').value = '';
+                await loadSlots();
+            } catch (err) { alert('حدث خطأ أثناء الحفظ: ' + err.message); }
+        }
+
+        // حفظ وجدولة العيادات والسعة في نفس الشاشة
+        async function saveClinicSchedule() {
+            const dept = document.getElementById('schDept').value;
+            const doc = document.getElementById('schDoc').value;
+            const date = document.getElementById('schDate').value;
+            const spec = document.getElementById('schSpec').value.trim() || 'عيادة عيون تخصصية';
+            const mNew = parseInt(document.getElementById('schMaxNew').value || 15);
+            const mFollow = parseInt(document.getElementById('schMaxFollow').value || 10);
+            const mScans = parseInt(document.getElementById('schMaxScans').value || 20);
+
+            if (!doc || !date) { alert('اختر الطبيب وتاريخ العيادة!'); return; }
+
+            try {
+                const { data: existing } = await db.from('DoctorDailySchedules')
+                    .select('ScheduleID')
+                    .eq('DoctorName', doc)
+                    .eq('ScheduleDate', date)
+                    .eq('Department', dept)
+                    .limit(1);
+
+                const payload = {
+                    Department: dept,
+                    Specialty: spec,
+                    DoctorName: doc,
+                    ScheduleDate: date,
+                    MaxNewConsultations: mNew,
+                    MaxFollowups: mFollow,
+                    MaxScansOrLaser: mScans
+                };
+
+                if (existing && existing.length > 0) {
+                    await db.from('DoctorDailySchedules').update(payload).eq('ScheduleID', existing[0].ScheduleID);
                 } else {
-                    alert(`✅ تم حجز وتثبيت الموعد الساعة ${selectedTimeSlot} بنجاح في قاعدة البيانات!`);
-                    selectedTimeSlot = '';
-                    loadDoctorSlots();
+                    await db.from('DoctorDailySchedules').insert([payload]);
                 }
-            }
+
+                alert(`✅ تم اعتماد ونشر جلسة العيادة بنجاح لدكتور (${doc}) ليوم (${date})!\nيمكن الآن البدء في استقبال الحجوزات.`);
+                switchCallTab('booking');
+                document.getElementById('bookDate').value = date;
+                document.getElementById('cmbDoc').value = doc;
+                await loadSlots();
+            } catch (err) { alert('خطأ في حفظ الجدول: ' + err.message); }
         }
     </script>
 </body>
