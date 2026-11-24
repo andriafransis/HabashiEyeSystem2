@@ -6,12 +6,15 @@
     <title>مركز حبشي للعيون - الاستقبال (Begol)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/api.js"></script>
     <style>
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         .top-navbar { background-color: #ffffff; border-bottom: 2px solid #e2e8f0; }
         .card-custom { border-radius: 10px; border: 1px solid #e2e8f0; }
         .begol-footer { margin-top: auto; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 12px 20px; font-size: 0.85rem; color: #64748b; }
+        .selected-row { background-color: #e0f2fe !important; }
     </style>
 </head>
 <body>
@@ -28,39 +31,43 @@
             <div class="d-flex align-items-center gap-2">
                 <a href="doctor.html" class="btn btn-outline-success btn-sm fw-bold">👨‍⚕️ عيادة الطبيب</a>
                 <a href="admin.html" class="btn btn-outline-danger btn-sm fw-bold">⚙️ لوحة الإدارة</a>
+                <a href="callcenter.html" class="btn btn-outline-info btn-sm fw-bold">📞 الكول سنتر</a>
                 <a href="queue.html" target="_blank" class="btn btn-outline-dark btn-sm fw-bold">📺 شاشة النداء</a>
                 <span id="lblUserBadge" class="badge bg-light text-dark border p-2">👤 موظف الاستقبال</span>
-                <button class="btn btn-sm btn-outline-danger fw-bold" onclick="sessionStorage.clear(); window.location.href='index.html'">خروج 🚪</button>
+                <button class="btn btn-sm btn-outline-danger fw-bold" onclick="logout()">خروج 🚪</button>
             </div>
         </div>
     </nav>
 
     <div class="container-fluid px-4 flex-grow-1">
         <div class="row g-3">
-            <!-- تسجيل مريض جديد -->
+            <!-- تسجيل وتعديل مريض جديد -->
             <div class="col-md-4">
                 <div class="card card-custom shadow-sm bg-white mb-3">
-                    <div class="card-header bg-white fw-bold text-primary py-3">➕ فتح ملف مريض جديد</div>
+                    <div class="card-header bg-white fw-bold text-primary py-3 d-flex justify-content-between align-items-center">
+                        <span id="patientFormTitle">➕ فتح ملف مريض جديد</span>
+                        <button class="btn btn-sm btn-outline-secondary py-0" onclick="resetPatientForm()">جديد</button>
+                    </div>
                     <div class="card-body">
                         <input type="hidden" id="pId" value="0">
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">اسم المريض ثلاثي:*</label>
-                            <input type="text" id="pFullName" class="form-control form-control-sm fw-bold" required>
+                            <label class="form-label small fw-bold">اسم المريض بالكامل:*</label>
+                            <input type="text" id="pFullName" class="form-control form-control-sm fw-bold" placeholder="الاسم رباعي..." required>
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-6">
                                 <label class="form-label small fw-bold">رقم الهاتف:*</label>
-                                <input type="text" id="pMobile" class="form-control form-control-sm" required>
+                                <input type="text" id="pMobile" class="form-control form-control-sm" placeholder="01xxxxxxxxx" required>
                             </div>
                             <div class="col-6">
-                                <label class="form-label small fw-bold">الرقم القومي:</label>
-                                <input type="text" id="pNationalId" class="form-control form-control-sm">
+                                <label class="form-label small fw-bold">الرقم القومي (14 رقم):</label>
+                                <input type="text" id="pNationalId" class="form-control form-control-sm" placeholder="14 رقم">
                             </div>
                         </div>
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label class="form-label small fw-bold">السن:</label>
-                                <input type="number" id="pAge" class="form-control form-control-sm">
+                                <label class="form-label small fw-bold">السن (بالسنوات):</label>
+                                <input type="number" id="pAge" class="form-control form-control-sm" placeholder="مثال: 45">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small fw-bold">النوع:</label>
@@ -70,17 +77,17 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary w-100 fw-bold" onclick="savePatient()">💾 حفظ ملف المريض</button>
+                        <button type="button" id="btnSavePatient" class="btn btn-primary w-100 fw-bold" onclick="savePatient()">💾 حفظ ملف المريض</button>
                     </div>
                 </div>
 
-                <!-- إصدار تذكرة كشف ودور -->
+                <!-- إصدار تذكرة كشف ودور للطابور -->
                 <div class="card card-custom shadow-sm bg-white">
-                    <div class="card-header bg-success text-white fw-bold py-2">🎟️ حجز تذكرة وتوجيه للدور</div>
+                    <div class="card-header bg-success text-white fw-bold py-2">🎟️ حجز تذكرة وتوجيه للطابور</div>
                     <div class="card-body">
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">المريض المختار:</label>
-                            <input type="text" id="ticketPatientDisplay" class="form-control form-control-sm fw-bold bg-light" readonly placeholder="اختر مريضاً من البحث">
+                            <label class="form-label small fw-bold">المريض المختار:*</label>
+                            <input type="text" id="ticketPatientDisplay" class="form-control form-control-sm fw-bold bg-light" readonly placeholder="اختر مريضاً من القائمة أولاً">
                             <input type="hidden" id="ticketPatientId" value="0">
                         </div>
                         <div class="mb-2">
@@ -94,40 +101,86 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label small fw-bold">الخدمة / الكشف المقترح:*</label>
-                            <select id="ticketService" class="form-select form-select-sm"></select>
+                            <select id="ticketService" class="form-select form-select-sm fw-bold text-primary"></select>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">العين المقررة:</label>
+                                <select id="ticketEyeSide" class="form-select form-select-sm">
+                                    <option value="عام">عام / كشف</option>
+                                    <option value="OD">العين اليمنى (OD)</option>
+                                    <option value="OS">العين اليسرى (OS)</option>
+                                    <option value="OU">العينين معاً (OU)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">السعر (ج.م):</label>
+                                <input type="number" id="ticketPrice" class="form-control form-control-sm fw-bold text-success text-center" value="300">
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">الطبيب المعالج:</label>
-                            <select id="ticketDoctor" class="form-select form-select-sm"></select>
+                            <label class="form-label small fw-bold">الطبيب المعالج (اختياري):</label>
+                            <select id="ticketDoctor" class="form-select form-select-sm fw-bold"></select>
                         </div>
-                        <button type="button" class="btn btn-success w-100 fw-bold py-2" onclick="issueQueueTicket()">🎟️ إصدار التذكرة وإرسال للطابور</button>
+                        <button type="button" class="btn btn-success w-100 fw-bold py-2 shadow-sm" onclick="issueQueueTicket()">
+                            🎟️ إصدار التذكرة وإرسال للعيادة
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- البحث وقائمة المرضى -->
+            <!-- البحث وقائمة المرضى وسجل الزيارات اليومية -->
             <div class="col-md-8">
-                <div class="card card-custom shadow-sm bg-white">
+                <div class="card card-custom shadow-sm bg-white mb-3">
                     <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                        <span>🔍 بحث عن المرضى</span>
+                        <span class="text-dark">🔍 بحث عن المرضى</span>
                         <div class="input-group input-group-sm w-50">
-                            <input type="text" id="txtSearch" class="form-control" placeholder="بحث بالاسم أو الهاتف..." oninput="searchPatients()">
+                            <input type="text" id="txtSearch" class="form-control" placeholder="ابحث بالاسم أو الهاتف أو الرقم القومي..." oninput="searchPatients()">
+                            <button class="btn btn-outline-secondary" onclick="searchPatients()">بحث</button>
                         </div>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="max-height: 40vh;">
                             <table class="table table-hover table-striped text-center align-middle m-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>كود الملف</th>
-                                        <th>الاسم</th>
-                                        <th>الهاتف</th>
+                                        <th>اسم المريض</th>
+                                        <th>رقم الهاتف</th>
+                                        <th>الرقم القومي</th>
                                         <th>السن</th>
                                         <th>إجراء</th>
                                     </tr>
                                 </thead>
                                 <tbody id="patientsTableBody">
-                                    <tr><td colspan="5" class="text-muted py-4">اكتب في البحث أو سجل مريضاً جديداً</td></tr>
+                                    <tr><td colspan="6" class="text-muted py-4">اكتب في البحث أو اختر مريضاً</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جدول طابور اليوم الحي -->
+                <div class="card card-custom shadow-sm bg-white">
+                    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-2">
+                        <span class="text-primary">📋 طابور المركز اليوم (Live Queue)</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadTodayQueue()">🔄 تحديث الطابور</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 40vh;">
+                            <table class="table table-bordered table-hover text-center align-middle m-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الدور</th>
+                                        <th>المريض</th>
+                                        <th>القسم</th>
+                                        <th>الخدمة</th>
+                                        <th>الطبيب</th>
+                                        <th>الحالة الحالية</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="todayQueueBody">
+                                    <tr><td colspan="6" class="text-muted py-3">جاري تحميل الطابور...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -142,110 +195,211 @@
     </footer>
 
     <script>
-        window.onload = function() {
+        let cachedServices = [];
+
+        window.onload = async function() {
             document.getElementById('lblUserBadge').innerText = `👤 ${sessionStorage.getItem('fullName') || 'موظف الاستقبال'}`;
-            loadServicesForDept();
-            loadDoctors();
-            searchPatients();
+            await loadDoctors();
+            await loadServicesForDept();
+            await searchPatients();
+            await loadTodayQueue();
         };
 
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        async function loadDoctors() {
+            try {
+                const { data } = await db.from('Users').select('FullName, Roles(RoleName)').eq('IsActive', true);
+                const docs = (data || []).filter(u => ['doctor', 'consultant', 'resident', 'specialist'].includes((u.Roles?.RoleName || '').toLowerCase()));
+                const sel = document.getElementById('ticketDoctor');
+                sel.innerHTML = '<option value="">-- عيادة عامة (أي طبيب متاح) --</option>';
+                docs.forEach(d => sel.innerHTML += `<option value="${d.FullName}">د. ${d.FullName}</option>`);
+            } catch (e) { }
+        }
+
+        async function loadServicesForDept() {
+            const dept = document.getElementById('ticketDept').value;
+            try {
+                const { data } = await db.from('ClinicServices').select('*').eq('Category', dept).eq('IsActive', true);
+                cachedServices = data || [];
+                const sel = document.getElementById('ticketService');
+                sel.innerHTML = '';
+                if (cachedServices.length === 0) {
+                    sel.innerHTML = `<option value="كشف عيون عام">كشف عيون عام</option>`;
+                } else {
+                    cachedServices.forEach(s => {
+                        sel.innerHTML += `<option value="${s.ServiceName}" data-price="${s.Price}">${s.ServiceName} (${s.Price} ج.م)</option>`;
+                    });
+                }
+                updateServicePrice();
+            } catch (e) { }
+        }
+
+        document.getElementById('ticketService').addEventListener('change', updateServicePrice);
+        function updateServicePrice() {
+            const sel = document.getElementById('ticketService');
+            const opt = sel.options[sel.selectedIndex];
+            if (opt && opt.dataset.price) {
+                document.getElementById('ticketPrice').value = opt.dataset.price;
+            }
+        }
+
         async function savePatient() {
+            const pId = parseInt(document.getElementById('pId').value || '0');
             const fullName = document.getElementById('pFullName').value.trim();
             const mobile = document.getElementById('pMobile').value.trim();
-            const nationalId = document.getElementById('pNationalId').value.trim();
-            const age = parseInt(document.getElementById('pAge').value || '0');
+            const nationalId = document.getElementById('pNationalId').value.trim() || null;
+            const age = parseInt(document.getElementById('pAge').value || '0') || null;
             const gender = document.getElementById('pGender').value;
 
-            if (!fullName || !mobile) { alert('الاسم ورقم الهاتف مطلوبان!'); return; }
+            if (!fullName || !mobile) { alert('الاسم بالكامل ورقم الهاتف مطلوبان!'); return; }
 
-            const { data, error } = await _supabase
-                .from('patients')
-                .insert([{ fullName, mobile, nationalId, age, gender }])
-                .select();
+            const payload = {
+                FullName: fullName,
+                Mobile1: mobile,
+                NationalID: nationalId,
+                Age: age,
+                Gender: gender,
+                FirstNameAr: fullName.split(' ')[0] || fullName
+            };
 
-            if (error) { alert('خطأ أثناء الحفظ: ' + error.message); }
-            else {
-                alert('✅ تم فتح ملف المريض بنجاح!');
-                document.getElementById('pFullName').value = '';
-                document.getElementById('pMobile').value = '';
-                document.getElementById('pNationalId').value = '';
-                document.getElementById('pAge').value = '';
+            try {
+                if (pId > 0) {
+                    await db.from('Patients').update(payload).eq('PatientID', pId);
+                    alert('✅ تم تعديل بيانات المريض بنجاح!');
+                } else {
+                    const { data, error } = await db.from('Patients').insert([payload]).select('PatientID, FullName').single();
+                    if (error) throw error;
+                    alert('✅ تم فتح ملف المريض الجديد بنجاح!');
+                    selectPatientForTicket(data.PatientID, data.FullName);
+                }
+                resetPatientForm();
                 searchPatients();
-                selectPatientForTicket(data[0].patientId, data[0].fullName);
+            } catch (err) {
+                alert('خطأ أثناء حفظ المريض: ' + err.message);
             }
         }
 
         async function searchPatients() {
             const q = document.getElementById('txtSearch').value.trim();
-            let query = _supabase.from('patients').select('*').eq('isArchived', false).order('patientId', { ascending: false }).limit(10);
-            if (q) query = query.or(`fullName.ilike.%${q}%,mobile.ilike.%${q}%`);
+            try {
+                let query = db.from('Patients').select('*').not('FullName', 'ilike', '%[مدمج]%').order('PatientID', { ascending: false }).limit(15);
+                if (q) {
+                    query = query.or(`FullName.ilike.%${q}%,Mobile1.ilike.%${q}%,NationalID.ilike.%${q}%`);
+                }
 
-            const { data, error } = await query;
-            const tbody = document.getElementById('patientsTableBody');
-            tbody.innerHTML = '';
+                const { data } = await query;
+                const tbody = document.getElementById('patientsTableBody');
+                tbody.innerHTML = '';
 
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-muted py-4">لم يتم العثور على نتائج</td></tr>';
-                return;
-            }
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-muted py-4">لم يتم العثور على أي ملفات مطابقة</td></tr>';
+                    return;
+                }
 
-            data.forEach(p => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="fw-bold">#${p.patientId}</td>
-                        <td class="fw-bold text-dark">${p.fullName}</td>
-                        <td>${p.mobile}</td>
-                        <td>${p.age || '-'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary py-0 px-2 fw-bold" onclick="selectPatientForTicket(${p.patientId}, '${p.fullName}')">🎟️ اختيار للحجز</button>
-                        </td>
-                    </tr>`;
-            });
+                data.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">#${p.PatientID}</td>
+                            <td class="fw-bold text-dark text-start ps-3">${p.FullName}</td>
+                            <td>${p.Mobile1 || '-'}</td>
+                            <td>${p.NationalID || '-'}</td>
+                            <td>${p.Age || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success py-0 px-2 fw-bold me-1" onclick="selectPatientForTicket(${p.PatientID}, '${p.FullName}')">🎟️ حجز</button>
+                                <button class="btn btn-sm btn-outline-primary py-0 px-2" onclick="editPatient(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch (e) { }
+        }
+
+        function editPatient(p) {
+            document.getElementById('pId').value = p.PatientID;
+            document.getElementById('pFullName').value = p.FullName;
+            document.getElementById('pMobile').value = p.Mobile1 || '';
+            document.getElementById('pNationalId').value = p.NationalID || '';
+            document.getElementById('pAge').value = p.Age || '';
+            document.getElementById('pGender').value = p.Gender || 'ذكر';
+            document.getElementById('patientFormTitle').innerText = `✏️ تعديل ملف: #${p.PatientID}`;
+            document.getElementById('btnSavePatient').innerText = '💾 حفظ التعديلات';
+        }
+
+        function resetPatientForm() {
+            document.getElementById('pId').value = '0';
+            document.getElementById('pFullName').value = '';
+            document.getElementById('pMobile').value = '';
+            document.getElementById('pNationalId').value = '';
+            document.getElementById('pAge').value = '';
+            document.getElementById('patientFormTitle').innerText = '➕ فتح ملف مريض جديد';
+            document.getElementById('btnSavePatient').innerText = '💾 حفظ ملف المريض';
         }
 
         function selectPatientForTicket(id, name) {
             document.getElementById('ticketPatientId').value = id;
-            document.getElementById('ticketPatientDisplay').value = `${name} (#${id})`;
-        }
-
-        async function loadServicesForDept() {
-            const dept = document.getElementById('ticketDept').value;
-            const { data } = await _supabase.from('services').select('name').eq('category', dept);
-            const sel = document.getElementById('ticketService');
-            sel.innerHTML = '';
-            (data || []).forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
-        }
-
-        async function loadDoctors() {
-            const { data } = await _supabase.from('users').select('fullName').in('roleName', ['Consultant', 'Specialist', 'Resident']);
-            const sel = document.getElementById('ticketDoctor');
-            sel.innerHTML = '<option value="">-- اختياري (طبيب العيادة) --</option>';
-            (data || []).forEach(d => sel.innerHTML += `<option value="${d.fullName}">د. ${d.fullName}</option>`);
+            document.getElementById('ticketPatientDisplay').value = `${name} (كود: #${id})`;
         }
 
         async function issueQueueTicket() {
             const patientId = parseInt(document.getElementById('ticketPatientId').value || '0');
-            const department = document.getElementById('ticketDept').value;
+            const clinic = document.getElementById('ticketDept').value;
             const serviceType = document.getElementById('ticketService').value;
+            const eyeSide = document.getElementById('ticketEyeSide').value;
+            const price = parseFloat(document.getElementById('ticketPrice').value || 0);
             const doctorName = document.getElementById('ticketDoctor').value;
 
-            if (patientId <= 0) { alert('يرجى اختيار مريض أولاً!'); return; }
+            if (patientId <= 0) { alert('يرجى اختيار مريض من القائمة أولاً!'); return; }
 
-            // احتساب رقم الدور التالي
-            const today = new Date().toISOString().split('T')[0];
-            const { count } = await _supabase.from('queue').select('*', { count: 'exact', head: true }).eq('visitDate', today);
-            const queueNumber = (count || 0) + 1;
-
-            const { error } = await _supabase.from('queue').insert([{
-                patientId, queueNumber, department, serviceType, doctorName, status: 'Waiting', visitDate: today
-            }]);
-
-            if (error) alert('خطأ في إصدار التذكرة: ' + error.message);
-            else {
-                alert(`✅ تم إصدار التذكرة بنجاح!\nرقم الدور: (${queueNumber}) تم إرساله لشاشة العيادة.`);
-                document.getElementById('ticketPatientId').value = '0';
-                document.getElementById('ticketPatientDisplay').value = '';
+            try {
+                // استدعاء محرك الحجز الموحد
+                const res = await api.queue.bookTicket(patientId, clinic, serviceType, eyeSide, price, doctorName);
+                if (res.success) {
+                    alert(`✅ تم إصدار التذكرة بنجاح!\nرقم الدور: (${res.queueNumber})\nتم إرسال المريض لشاشة الدكتور.`);
+                    document.getElementById('ticketPatientId').value = '0';
+                    document.getElementById('ticketPatientDisplay').value = '';
+                    await loadTodayQueue();
+                }
+            } catch (err) {
+                alert('خطأ أثناء إصدار التذكرة: ' + err.message);
             }
+        }
+
+        async function loadTodayQueue() {
+            const today = new Date().toISOString().split('T')[0];
+            const tbody = document.getElementById('todayQueueBody');
+            try {
+                const { data } = await db.from('PatientQueue')
+                    .select('*, Patients(FullName)')
+                    .gte('ArrivedTime', today)
+                    .order('QueueNumber', { ascending: false })
+                    .limit(20);
+
+                tbody.innerHTML = '';
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-muted py-3">لا توجد تذاكر مسجلة اليوم حتى الآن</td></tr>';
+                    return;
+                }
+
+                data.forEach(q => {
+                    let stBadge = '<span class="badge bg-warning text-dark">انتظار</span>';
+                    if (q.Status === 'Dilating') stBadge = '<span class="badge bg-info text-dark">توسيع حدقة ⏳</span>';
+                    else if (q.Status === 'DilationReady') stBadge = '<span class="badge bg-primary">جاهز بعد التوسيع ✅</span>';
+                    else if (q.Status === 'Done') stBadge = '<span class="badge bg-success">تم الكشف ✔️</span>';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold fs-6 text-primary">${q.QueueNumber}</td>
+                            <td class="fw-bold text-dark text-start ps-3">${q.Patients?.FullName || 'مريض'}</td>
+                            <td><span class="badge bg-light text-dark border">${q.Department}</span></td>
+                            <td>${q.ServiceType || '-'}</td>
+                            <td>${q.DoctorName ? 'د. ' + q.DoctorName : 'عام'}</td>
+                            <td>${stBadge}</td>
+                        </tr>`;
+                });
+            } catch (e) { }
         }
     </script>
 </body>
