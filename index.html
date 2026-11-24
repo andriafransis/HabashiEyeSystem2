@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مركز العيون التخصصي - تسجيل الدخول</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- مكتبة سوبابيز الرسمية -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <!-- استدعاء العميل والمحرك المركزي -->
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/api.js"></script>
+
     <style>
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0284c7 100%);
@@ -68,29 +73,49 @@
             btnSubmit.innerText = 'جاري التحقق...';
 
             try {
-                const { data, error } = await _supabase
-                    .from('users')
-                    .select('*')
-                    .eq('username', username)
-                    .eq('password', password)
+                // التأكد من وجود محرك api أو العميل db
+                let client = (typeof db !== 'undefined') ? db : (typeof _supabase !== 'undefined' ? _supabase : null);
+                
+                if (!client) {
+                    throw new Error("لم يتم تحميل ملف js/supabaseClient.js أو المفاتيح بداخله غير صحيحة!");
+                }
+
+                // استعلام مباشر وصحيح لجدول Users بالحروف الكبيرة
+                const { data, error } = await client
+                    .from('Users')
+                    .select('*, Roles(RoleName)')
+                    .eq('Username', username)
+                    .eq('IsActive', true)
                     .single();
 
                 if (error || !data) {
-                    alertBox.innerText = 'اسم المستخدم أو كلمة المرور غير صحيحة!';
+                    alertBox.innerText = 'اسم المستخدم غير مسجل أو غير مفعل!';
                     alertBox.style.display = 'block';
-                } else {
-                    sessionStorage.setItem('userId', data.id);
-                    sessionStorage.setItem('fullName', data.fullName);
-                    sessionStorage.setItem('roleName', data.roleName);
-                    sessionStorage.setItem('doctorScope', data.doctorScope || 'كشوفات وفحوصات');
-
-                    const role = data.roleName.toLowerCase();
-                    if (role === 'admin') window.location.href = 'admin.html';
-                    else if (['consultant', 'specialist', 'resident'].includes(role)) window.location.href = 'doctor.html';
-                    else if (role === 'callcenter') window.location.href = 'callcenter.html';
-                    else if (role === 'dilation') window.location.href = 'dilation.html';
-                    else window.location.href = 'reception.html';
+                    return;
                 }
+
+                if (data.PasswordHash !== password) {
+                    alertBox.innerText = 'كلمة المرور غير صحيحة!';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                // تخزين بيانات الجلسة
+                const role = data.Roles?.RoleName || 'Consultant';
+                sessionStorage.setItem('userId', data.UserID);
+                sessionStorage.setItem('fullName', data.FullName);
+                sessionStorage.setItem('roleName', role);
+                sessionStorage.setItem('allowedScreens', data.AllowedScreens || 'all');
+                sessionStorage.setItem('doctorScope', data.DoctorScope || 'كشوفات وفحوصات');
+
+                // التوجيه للشاشة المناسبة بدون / لتوافق GitHub Pages
+                const rLow = role.toLowerCase();
+                if (rLow === 'admin') window.location.href = 'admin.html';
+                else if (['doctor', 'consultant', 'resident', 'specialist'].includes(rLow)) window.location.href = 'doctor.html';
+                else if (rLow === 'callcenter') window.location.href = 'callcenter.html';
+                else if (rLow === 'dilation') window.location.href = 'dilation.html';
+                else window.location.href = 'reception.html';
+
             } catch (err) {
                 alertBox.innerText = 'خطأ في الاتصال بقاعدة البيانات: ' + err.message;
                 alertBox.style.display = 'block';
