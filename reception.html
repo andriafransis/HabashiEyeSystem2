@@ -3,37 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مركز حبشي للعيون - الاستقبال (Begol)</title>
+    <title>مركز حبشي للعيون - الاستقبال (Begol Dark)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
     <script src="js/auth-guard.js"></script>
     <script src="js/api.js"></script>
     <style>
-        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        .top-navbar { background-color: #ffffff; border-bottom: 2px solid #e2e8f0; }
-        .card-custom { border-radius: 10px; border: 1px solid #e2e8f0; }
-        .begol-footer { margin-top: auto; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 12px 20px; font-size: 0.85rem; color: #64748b; }
-        .selected-row { background-color: #e0f2fe !important; }
+        body { background-color: #0b0f19; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .top-navbar { background-color: #111827; border-bottom: 2px solid #1f2937; }
+        .card-custom { background: #111827; border-radius: 14px; border: 1px solid #1f2937; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .card-header-custom { background: #1a2234; border-bottom: 1px solid #2d3748; padding: 14px 18px; border-radius: 13px 13px 0 0 !important; }
+        
+        .form-control, .form-select {
+            background-color: #0d131f !important;
+            border: 1px solid #2d3748 !important;
+            color: #f8fafc !important;
+            border-radius: 8px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.25) !important;
+        }
+        .form-control::placeholder { color: #64748b; }
+
+        .table-dark-custom { --bs-table-bg: transparent; color: #e2e8f0; border-color: #1f2937; }
+        .table-dark-custom thead th { background-color: #162032; color: #94a3b8; font-weight: 700; border-bottom: 2px solid #2d3748; }
+        .table-dark-custom tbody tr:hover { background-color: #1e293b !important; }
+
+        .begol-footer { margin-top: auto; background: #111827; border-top: 1px solid #1f2937; padding: 12px 20px; font-size: 0.85rem; color: #64748b; }
+        .andy-badge { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+        .btn-neon-primary { background: #0284c7; color: white; border: none; font-weight: bold; }
+        .btn-neon-primary:hover { background: #0369a1; color: white; }
+        .btn-neon-success { background: #059669; color: white; border: none; font-weight: bold; }
+        .btn-neon-success:hover { background: #047857; color: white; }
     </style>
 </head>
 <body>
 
+    <!-- البار العلوي الداكن -->
     <nav class="top-navbar py-2 px-4 shadow-sm mb-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center">
-                <span class="fs-4 me-2 text-primary">🌐</span>
+                <span class="fs-3 me-2">🌐</span>
                 <div>
-                    <h5 class="m-0 fw-bold text-dark">مركز حبشي التخصصي للعيون</h5>
-                    <small class="text-primary fw-bold" style="font-size: 0.75rem;">نظام بيجول • قسم الاستقبال وتسجيل المرضى</small>
+                    <h5 class="m-0 fw-bold text-white">مركز حبشي التخصصي للعيون</h5>
+                    <small class="text-info fw-bold" style="font-size: 0.75rem;">نظام بيجول • بوابة الاستقبال وتسجيل المرضى</small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a href="doctor.html" class="btn btn-outline-success btn-sm fw-bold">👨‍⚕️ عيادة الطبيب</a>
-                <a href="admin.html" class="btn btn-outline-danger btn-sm fw-bold">⚙️ لوحة الإدارة</a>
-                <a href="callcenter.html" class="btn btn-outline-info btn-sm fw-bold">📞 الكول سنتر</a>
-                <a href="queue.html" target="_blank" class="btn btn-outline-dark btn-sm fw-bold">📺 شاشة النداء</a>
-                <span id="lblUserBadge" class="badge bg-light text-dark border p-2">👤 موظف الاستقبال</span>
+                <a href="doctor.html" class="btn btn-outline-info btn-sm fw-bold">👨‍⚕️ عيادة الطبيب</a>
+                <a href="dilation.html" class="btn btn-outline-warning btn-sm fw-bold">💧 غرفة القطرات</a>
+                <a href="queue.html" target="_blank" class="btn btn-outline-light btn-sm fw-bold">📺 شاشة المراحل</a>
+                <a href="admin.html" class="btn btn-outline-danger btn-sm fw-bold">⚙️ الإدارة</a>
+                <span id="lblUserBadge" class="badge bg-dark text-info border border-secondary p-2">👤 موظف الاستقبال</span>
                 <button class="btn btn-sm btn-outline-danger fw-bold" onclick="logout()">خروج 🚪</button>
             </div>
         </div>
@@ -43,55 +66,58 @@
         <div class="row g-3">
             <!-- تسجيل وتعديل مريض جديد -->
             <div class="col-md-4">
-                <div class="card card-custom shadow-sm bg-white mb-3">
-                    <div class="card-header bg-white fw-bold text-primary py-3 d-flex justify-content-between align-items-center">
-                        <span id="patientFormTitle">➕ فتح ملف مريض جديد</span>
+                <div class="card card-custom mb-3">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <span id="patientFormTitle" class="fw-bold text-info">➕ فتح ملف مريض جديد</span>
                         <button class="btn btn-sm btn-outline-secondary py-0" onclick="resetPatientForm()">جديد</button>
                     </div>
                     <div class="card-body">
                         <input type="hidden" id="pId" value="0">
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">اسم المريض بالكامل:*</label>
-                            <input type="text" id="pFullName" class="form-control form-control-sm fw-bold" placeholder="الاسم رباعي..." required>
+                            <label class="form-label small fw-bold text-slate-300">اسم المريض رباعي:*</label>
+                            <input type="text" id="pFullName" class="form-control form-control-sm fw-bold" placeholder="اكتب اسم المريض كاملاً..." required>
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <label class="form-label small fw-bold">رقم الهاتف:*</label>
+                                <label class="form-label small fw-bold text-slate-300">رقم الهاتف:*</label>
                                 <input type="text" id="pMobile" class="form-control form-control-sm" placeholder="01xxxxxxxxx" required>
                             </div>
                             <div class="col-6">
-                                <label class="form-label small fw-bold">الرقم القومي (14 رقم):</label>
+                                <label class="form-label small fw-bold text-slate-300">الرقم القومي:</label>
                                 <input type="text" id="pNationalId" class="form-control form-control-sm" placeholder="14 رقم">
                             </div>
                         </div>
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label class="form-label small fw-bold">السن (بالسنوات):</label>
+                                <label class="form-label small fw-bold text-slate-300">السن:</label>
                                 <input type="number" id="pAge" class="form-control form-control-sm" placeholder="مثال: 45">
                             </div>
                             <div class="col-6">
-                                <label class="form-label small fw-bold">النوع:</label>
+                                <label class="form-label small fw-bold text-slate-300">النوع:</label>
                                 <select id="pGender" class="form-select form-select-sm">
                                     <option value="ذكر">ذكر</option>
                                     <option value="أنثى">أنثى</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="button" id="btnSavePatient" class="btn btn-primary w-100 fw-bold" onclick="savePatient()">💾 حفظ ملف المريض</button>
+                        <button type="button" id="btnSavePatient" class="btn btn-neon-primary w-100 fw-bold py-2" onclick="savePatient()">💾 حفظ ملف المريض</button>
                     </div>
                 </div>
 
                 <!-- إصدار تذكرة كشف ودور للطابور -->
-                <div class="card card-custom shadow-sm bg-white">
-                    <div class="card-header bg-success text-white fw-bold py-2">🎟️ حجز تذكرة وتوجيه للطابور</div>
+                <div class="card card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success">🎟️ حجز تذكرة وتوجيه للطابور</span>
+                        <span class="badge bg-success bg-opacity-25 text-success">توجيه فوري</span>
+                    </div>
                     <div class="card-body">
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">المريض المختار:*</label>
-                            <input type="text" id="ticketPatientDisplay" class="form-control form-control-sm fw-bold bg-light" readonly placeholder="اختر مريضاً من القائمة أولاً">
+                            <label class="form-label small fw-bold text-slate-300">المريض المختار:*</label>
+                            <input type="text" id="ticketPatientDisplay" class="form-control form-control-sm fw-bold bg-dark text-warning" readonly placeholder="اختر مريضاً من القائمة أولاً">
                             <input type="hidden" id="ticketPatientId" value="0">
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">القسم الموجه إليه:*</label>
+                            <label class="form-label small fw-bold text-slate-300">القسم الموجه إليه:*</label>
                             <select id="ticketDept" class="form-select form-select-sm fw-bold" onchange="loadServicesForDept()">
                                 <option value="عيادة الكشف">🏥 عيادات الكشف التخصصية</option>
                                 <option value="وحدة الفحوصات">🔬 وحدة الفحوصات والأشعة</option>
@@ -100,12 +126,12 @@
                             </select>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">الخدمة / الكشف المقترح:*</label>
-                            <select id="ticketService" class="form-select form-select-sm fw-bold text-primary"></select>
+                            <label class="form-label small fw-bold text-slate-300">الخدمة / الكشف المقترح:*</label>
+                            <select id="ticketService" class="form-select form-select-sm fw-bold text-info"></select>
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <label class="form-label small fw-bold">العين المقررة:</label>
+                                <label class="form-label small fw-bold text-slate-300">العين المقررة:</label>
                                 <select id="ticketEyeSide" class="form-select form-select-sm">
                                     <option value="عام">عام / كشف</option>
                                     <option value="OD">العين اليمنى (OD)</option>
@@ -114,16 +140,16 @@
                                 </select>
                             </div>
                             <div class="col-6">
-                                <label class="form-label small fw-bold">السعر (ج.م):</label>
-                                <input type="number" id="ticketPrice" class="form-control form-control-sm fw-bold text-success text-center" value="300">
+                                <label class="form-label small fw-bold text-slate-300">السعر (ج.م):</label>
+                                <input type="number" id="ticketPrice" class="form-control form-control-sm fw-bold text-success text-center fs-6" value="300">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">الطبيب المعالج (اختياري):</label>
+                            <label class="form-label small fw-bold text-slate-300">الطبيب المعالج (اختياري):</label>
                             <select id="ticketDoctor" class="form-select form-select-sm fw-bold"></select>
                         </div>
-                        <button type="button" class="btn btn-success w-100 fw-bold py-2 shadow-sm" onclick="issueQueueTicket()">
-                            🎟️ إصدار التذكرة وإرسال للعيادة
+                        <button type="button" class="btn btn-neon-success w-100 fw-bold py-2 shadow" onclick="issueQueueTicket()">
+                            🎟️ إصدار التذكرة وإرسال للعيادة فوراً
                         </button>
                     </div>
                 </div>
@@ -131,18 +157,18 @@
 
             <!-- البحث وقائمة المرضى وسجل الزيارات اليومية -->
             <div class="col-md-8">
-                <div class="card card-custom shadow-sm bg-white mb-3">
-                    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-3">
-                        <span class="text-dark">🔍 بحث عن المرضى</span>
+                <div class="card card-custom mb-3">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span class="fw-bold text-white">🔍 دليل وملفات المرضى المسجلين</span>
                         <div class="input-group input-group-sm w-50">
                             <input type="text" id="txtSearch" class="form-control" placeholder="ابحث بالاسم أو الهاتف أو الرقم القومي..." oninput="searchPatients()">
-                            <button class="btn btn-outline-secondary" onclick="searchPatients()">بحث</button>
+                            <button class="btn btn-outline-info" onclick="searchPatients()">بحث</button>
                         </div>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive" style="max-height: 40vh;">
-                            <table class="table table-hover table-striped text-center align-middle m-0">
-                                <thead class="table-light">
+                        <div class="table-responsive" style="max-height: 38vh;">
+                            <table class="table table-dark-custom table-hover text-center align-middle m-0">
+                                <thead>
                                     <tr>
                                         <th>كود الملف</th>
                                         <th>اسم المريض</th>
@@ -160,16 +186,16 @@
                     </div>
                 </div>
 
-                <!-- جدول طابور اليوم الحي -->
-                <div class="card card-custom shadow-sm bg-white">
-                    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center py-2">
-                        <span class="text-primary">📋 طابور المركز اليوم (Live Queue)</span>
-                        <button class="btn btn-sm btn-outline-primary" onclick="loadTodayQueue()">🔄 تحديث الطابور</button>
+                <!-- جدول طابور اليوم الحي المظلم -->
+                <div class="card card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-info">📋 طابور المركز الحي اليوم (Live Real-Time Queue)</span>
+                        <button class="btn btn-sm btn-outline-info" onclick="loadTodayQueue()">🔄 تحديث</button>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 40vh;">
-                            <table class="table table-bordered table-hover text-center align-middle m-0">
-                                <thead class="table-light">
+                            <table class="table table-dark-custom table-hover text-center align-middle m-0">
+                                <thead>
                                     <tr>
                                         <th>الدور</th>
                                         <th>المريض</th>
@@ -190,8 +216,20 @@
         </div>
     </div>
 
-    <footer class="begol-footer text-center">
-        نظام بيجول لإدارة مراكز العيون (Begol) • جميع الحقوق محفوظة © 2026
+    <footer class="begol-footer">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <strong class="text-white">👁️ نظام بيجول لإدارة مراكز العيون (Begol Dark Edition)</strong>
+                <span class="mx-1">•</span>
+                <span>مركز حبشي التخصصي للعيون</span>
+                <span class="mx-1">•</span>
+                <span class="text-muted">جميع الحقوق محفوظة © 2026</span>
+            </div>
+            <div>
+                <span class="me-2">تطوير وبرمجة:</span>
+                <span class="andy-badge">آندي (Andy)</span>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -303,14 +341,14 @@
                 data.forEach(p => {
                     tbody.innerHTML += `
                         <tr>
-                            <td class="fw-bold">#${p.PatientID}</td>
-                            <td class="fw-bold text-dark text-start ps-3">${p.FullName}</td>
+                            <td class="fw-bold text-info">#${p.PatientID}</td>
+                            <td class="fw-bold text-white text-start ps-3">${p.FullName}</td>
                             <td>${p.Mobile1 || '-'}</td>
                             <td>${p.NationalID || '-'}</td>
                             <td>${p.Age || '-'}</td>
                             <td>
-                                <button class="btn btn-sm btn-success py-0 px-2 fw-bold me-1" onclick="selectPatientForTicket(${p.PatientID}, '${p.FullName}')">🎟️ حجز</button>
-                                <button class="btn btn-sm btn-outline-primary py-0 px-2" onclick="editPatient(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️</button>
+                                <button class="btn btn-sm btn-outline-success py-0 px-2 fw-bold me-1" onclick="selectPatientForTicket(${p.PatientID}, '${p.FullName}')">🎟️ اختيار</button>
+                                <button class="btn btn-sm btn-outline-info py-0 px-2" onclick="editPatient(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️</button>
                             </td>
                         </tr>`;
                 });
@@ -354,10 +392,9 @@
             if (patientId <= 0) { alert('يرجى اختيار مريض من القائمة أولاً!'); return; }
 
             try {
-                // استدعاء محرك الحجز الموحد
                 const res = await api.queue.bookTicket(patientId, clinic, serviceType, eyeSide, price, doctorName);
                 if (res.success) {
-                    alert(`✅ تم إصدار التذكرة بنجاح!\nرقم الدور: (${res.queueNumber})\nتم إرسال المريض لشاشة الدكتور.`);
+                    alert(`✅ تم إصدار التذكرة بنجاح!\nرقم الدور: (${res.queueNumber})\nتم إرسال المريض لشاشة الدكتور فوراً.`);
                     document.getElementById('ticketPatientId').value = '0';
                     document.getElementById('ticketPatientDisplay').value = '';
                     await loadTodayQueue();
@@ -385,16 +422,16 @@
 
                 data.forEach(q => {
                     let stBadge = '<span class="badge bg-warning text-dark">انتظار</span>';
-                    if (q.Status === 'Dilating') stBadge = '<span class="badge bg-info text-dark">توسيع حدقة ⏳</span>';
-                    else if (q.Status === 'DilationReady') stBadge = '<span class="badge bg-primary">جاهز بعد التوسيع ✅</span>';
-                    else if (q.Status === 'Done') stBadge = '<span class="badge bg-success">تم الكشف ✔️</span>';
+                    if (q.Status === 'Dilating') stBadge = '<span class="badge bg-warning bg-opacity-25 text-warning border border-warning">توسيع ⏳</span>';
+                    else if (q.Status === 'DilationReady') stBadge = '<span class="badge bg-info bg-opacity-25 text-info border border-info">جاهز بعد التوسيع ✅</span>';
+                    else if (q.Status === 'Done') stBadge = '<span class="badge bg-success bg-opacity-25 text-success border border-success">تم الكشف ✔️</span>';
 
                     tbody.innerHTML += `
                         <tr>
-                            <td class="fw-bold fs-6 text-primary">${q.QueueNumber}</td>
-                            <td class="fw-bold text-dark text-start ps-3">${q.Patients?.FullName || 'مريض'}</td>
-                            <td><span class="badge bg-light text-dark border">${q.Department}</span></td>
-                            <td>${q.ServiceType || '-'}</td>
+                            <td class="fw-bold fs-6 text-info">${q.QueueNumber}</td>
+                            <td class="fw-bold text-white text-start ps-3">${q.Patients?.FullName || 'مريض'}</td>
+                            <td><span class="badge bg-dark border border-secondary">${q.Department}</span></td>
+                            <td class="small text-slate-300">${q.ServiceType || '-'}</td>
                             <td>${q.DoctorName ? 'د. ' + q.DoctorName : 'عام'}</td>
                             <td>${stBadge}</td>
                         </tr>`;
