@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">مركز حبشي للعيون - عيادة الطبيب (نظام بيجول)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" id="bootstrapCss">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/api.js"></script>
     <style>
         body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .top-navbar { background-color: #ffffff; border-bottom: 2px solid #cbd5e1; }
@@ -32,11 +36,6 @@
         .begol-footer { margin-top: auto; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 12px 20px; font-size: 0.85rem; color: #64748b; }
         .andy-badge { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
     </style>
-
-    <!-- الربط المباشر مع سوبابيز وحارس الأمان -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/supabaseClient.js"></script>
-    <script src="/js/auth-guard.js"></script>
 </head>
 <body>
 
@@ -60,8 +59,8 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="/reception.html" class="btn btn-outline-success btn-sm fw-bold">👥 الاستقبال</a>
-                <a href="/admin.html" class="btn btn-outline-danger btn-sm fw-bold" id="adminLink">⚙️ الإدارة</a>
+                <a href="reception.html" class="btn btn-outline-success btn-sm fw-bold">👥 الاستقبال</a>
+                <a href="admin.html" class="btn btn-outline-danger btn-sm fw-bold" id="adminLink">⚙️ الإدارة</a>
                 <span id="lblDoctorBadge" class="badge bg-light text-dark border p-2">👨‍⚕️ الطبيب: ...</span>
                 <button class="btn btn-sm btn-outline-danger fw-bold" onclick="logout()">خروج 🚪</button>
             </div>
@@ -75,7 +74,10 @@
             <div class="col-lg-3 col-md-4 queue-col">
                 <div class="card shadow-sm border-0 mb-3">
                     <div class="card-header bg-white py-2">
-                        <div class="fw-bold text-primary mb-2 small" id="queueSectionTitle">⏳ طابور: عيادة الكشف</div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-primary small" id="queueSectionTitle">⏳ طابور: عيادة الكشف</span>
+                            <span id="liveQueueDot" class="badge bg-success" title="مربوط بالوقت الحقيقي">● Live</span>
+                        </div>
                         <div class="input-group input-group-sm mb-2">
                             <input type="text" id="txtDoctorQuickSearch" class="form-control" placeholder="🔍 كود أو اسم المريض..." onkeypress="if(event.key==='Enter') doctorQuickSearch()">
                             <button class="btn btn-outline-primary" onclick="doctorQuickSearch()">فتح</button>
@@ -144,8 +146,8 @@
                                 <div class="col-md-5">
                                     <label class="form-label small fw-bold">نوع القطرة المطلوبة:</label>
                                     <select id="cmbDilationType" class="form-select form-select-sm fw-bold">
-                                        <option value="Mydriacyl 1% (ميدرياسيل سريع)">Mydriacyl 1% (ميدرياسيل سريع)</option>
-                                        <option value="Cyclopentolate 1% (سيكلوبنتوليت)">Cyclopentolate 1% (سيكلوبنتوليت)</option>
+                                        <option value="Mydriacyl 1% (ميدرياسيل سريع)">Mydriacyl 1% (ميدرياسيل سريع 15 دقيقة)</option>
+                                        <option value="Cyclopentolate 1% (سيكلوبنتوليت أطفال)">Cyclopentolate 1% (سيكلوبنتوليت أطفال 45 دقيقة)</option>
                                         <option value="Phenylephrine 2.5%">Phenylephrine 2.5% (فينيليفرين)</option>
                                     </select>
                                 </div>
@@ -501,9 +503,24 @@
             await loadConsultantsForPrep();
             await loadMedicationsList();
             switchDepartment('عيادة الكشف');
+            initRealtimeQueue();
         };
 
-        function logout() { sessionStorage.clear(); window.location.href = '/index.html'; }
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // الاستماع للتحديثات الحية للطابور في Supabase Realtime
+        function initRealtimeQueue() {
+            try {
+                db.channel('doctor-queue-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'PatientQueue' }, (payload) => {
+                        loadQueue();
+                    })
+                    .subscribe();
+            } catch (e) { }
+        }
 
         async function loadConsultantsForPrep() {
             try {
@@ -552,7 +569,6 @@
             loadQueue();
         }
 
-        // جلب طابور الحالات مباشرة من سوبابيز لكل دكتور
         async function loadQueue() {
             const queueList = document.getElementById('queueList');
             const today = new Date().toISOString().split('T')[0];
@@ -570,7 +586,6 @@
                     query = query.eq('Status', 'Done');
                 }
 
-                // تصفية حسب الطبيب أو الجلسة
                 if (filterDoc && userRole !== 'Admin' && document.getElementById('cmbPrepConsultant').value) {
                     query = query.or(`DoctorName.eq.${filterDoc},DoctorName.is.null,DoctorName.eq.''`);
                 }
@@ -647,7 +662,6 @@
 
             clearForm();
 
-            // جلب بيانات المريض الشخصية وسجل الفحوصات السابقة
             try {
                 const { data: p } = await db.from('Patients').select('*').eq('PatientID', patientId).single();
                 if (p) {
@@ -656,7 +670,6 @@
             } catch (e) { }
         }
 
-        // إرسال أمر التوسيع مباشرة إلى سوبابيز
         async function sendDilationOrder() {
             if (selectedQueueId === 0) { alert('اختر مريضاً أولاً!'); return; }
             const dType = document.getElementById('cmbDilationType').value;
@@ -715,7 +728,6 @@
             });
         }
 
-        // اعتماد وإنهاء الكشف وتحديث حالة الزيارة بالسحاب
         async function finishExamination() {
             if (selectedPatientId === 0) { alert('اختر مريضاً أولاً!'); return; }
 
@@ -734,10 +746,8 @@
             }
 
             try {
-                // 1. إنهاء دور المريض في الطابور
                 await db.from('PatientQueue').update({ Status: 'Done' }).eq('QueueID', selectedQueueId);
 
-                // 2. تحديث سجل الزيارة بالملاحظات والروشتة
                 const fullNotes = ` | تشخيص: ${diagnosis} | فحص: ${findings} | روشتة: ${JSON.stringify(medications)}`;
                 const today = new Date().toISOString().split('T')[0];
 
@@ -794,7 +804,6 @@
             renderMedsTable();
         }
 
-        // طباعة كارت النظارة والروشتة
         function printGlassesRx() {
             if (selectedPatientId === 0) { alert('اختر مريضاً أولاً'); return; }
             const w = window.open('', '', 'width=700,height=550');
