@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">مركز حبشي للعيون - لوحة تحكم مدير النظام (Begol)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" id="bootstrapCss">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/api.js"></script>
     <style>
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .top-navbar { background-color: #ffffff; border-bottom: 2px solid #e2e8f0; }
@@ -62,11 +66,11 @@
                 <!-- اختصارات التنقل للشاشات -->
                 <div class="d-inline-flex border-start ps-3 align-items-center">
                     <span class="badge bg-secondary me-2" id="lblPortals">الشاشات:</span>
-                    <a href="/reception.html" class="btn btn-outline-primary portal-btn" id="btnRec">🌐 الاستقبال</a>
-                    <a href="/doctor.html" class="btn btn-outline-success portal-btn" id="btnDoc">👨‍⚕️ عيادة الطبيب</a>
-                    <a href="/callcenter.html" class="btn btn-outline-info portal-btn" id="btnCall">📞 الكول سنتر</a>
-                    <a href="/dilation.html" class="btn btn-outline-warning portal-btn" id="btnDil">💧 القطرات</a>
-                    <a href="/queue.html" target="_blank" class="btn btn-outline-dark portal-btn" id="btnQueue">📺 الانتظار</a>
+                    <a href="reception.html" class="btn btn-outline-primary portal-btn" id="btnRec">🌐 الاستقبال</a>
+                    <a href="doctor.html" class="btn btn-outline-success portal-btn" id="btnDoc">👨‍⚕️ عيادة الطبيب</a>
+                    <a href="callcenter.html" class="btn btn-outline-info portal-btn" id="btnCall">📞 الكول سنتر</a>
+                    <a href="dilation.html" class="btn btn-outline-warning portal-btn" id="btnDil">💧 القطرات</a>
+                    <a href="queue.html" target="_blank" class="btn btn-outline-dark portal-btn" id="btnQueue">📺 الانتظار</a>
                 </div>
             </div>
 
@@ -338,11 +342,11 @@
                                 <table class="table table-striped table-bordered text-center m-0 align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>اسم الدواء</th>
-                                            <th>التصنيف</th>
-                                            <th>الجرعة الافتراضية</th>
-                                            <th>إرشادات الاستعمال</th>
-                                            <th>إجراءات</th>
+                                            <th id="thMedName">اسم الدواء</th>
+                                            <th id="thMedCat">التصنيف</th>
+                                            <th id="thMedDose">الجرعة الافتراضية</th>
+                                            <th id="thMedInstr">إرشادات الاستعمال</th>
+                                            <th id="thMedActions">إجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody id="medTableBody">
@@ -408,7 +412,6 @@
                                 <input type="text" id="uTitle" class="form-control form-control-sm" placeholder="استشاري جراحة الشبكية">
                             </div>
 
-                            <!-- تحديد الشاشات المصرح له بفتحها (جديد ومهم) -->
                             <div class="p-2 mb-3 bg-light border rounded">
                                 <label class="form-label small fw-bold text-dark d-block mb-1">🔐 الشاشات المصرح بفتحها لهذا المستخدم:</label>
                                 <div class="form-check form-check-inline">
@@ -884,7 +887,7 @@
             loadInsurance();
         };
 
-        function logout() { sessionStorage.clear(); window.location.href = '/index.html'; }
+        function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
         function toggleLanguage() {
             currentLanguage = (currentLanguage === 'ar') ? 'en' : 'ar';
@@ -1086,7 +1089,6 @@
             document.getElementById('srvEditId').value = s.id;
             document.getElementById('srvCategory').value = s.category;
             onSrvCategoryChange();
-            document.getElementById('srvName').value = s.name;
 
             if (s.category === 'عيادة الكشف') {
                 document.getElementById('srvConsultCustomName').value = s.name;
@@ -1245,7 +1247,6 @@
             const password = document.getElementById('uPassword').value.trim();
             if (!fullName || !username) { alert('الاسم واسم الدخول مطلوبان!'); return; }
 
-            // تجميع الشاشات المصرح بها
             let allowedScreensList = [];
             if (document.getElementById('chkScrReception').checked) allowedScreensList.push('reception');
             if (document.getElementById('chkScrDoctor').checked) allowedScreensList.push('doctor');
@@ -1268,10 +1269,13 @@
             let method = isUpdate ? 'PUT' : 'POST';
 
             let res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (res.ok) {
+            let result = await res.json();
+            if (res.ok && result.success !== false) {
                 alert('✅ تم حفظ بيانات المستخدم والصلاحيات بنجاح');
                 resetUserForm();
                 loadUsers();
+            } else {
+                alert('⚠️ خطأ: ' + (result.message || 'تعذر الحفظ'));
             }
         }
 
@@ -1286,7 +1290,6 @@
             document.getElementById('uTitle').value = u.title || '';
             checkRoleDoctor();
 
-            // ضبط مربعات الشاشات المصرح بها
             const screens = (u.allowedScreens || 'all').toLowerCase();
             document.getElementById('chkScrReception').checked = (screens === 'all' || screens.includes('reception'));
             document.getElementById('chkScrDoctor').checked = (screens === 'all' || screens.includes('doctor'));
@@ -1478,7 +1481,6 @@
                     })
                 });
 
-                // معالجة الاستجابة بأمان لمنع Unexpected end of JSON
                 const text = await res.text();
                 let data = {};
                 try {
@@ -1504,4 +1506,3 @@
     </script>
 </body>
 </html>
-

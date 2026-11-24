@@ -24,11 +24,12 @@ const api = {
                 sessionStorage.setItem('allowedScreens', data.AllowedScreens || 'all');
                 sessionStorage.setItem('doctorScope', data.DoctorScope || 'كشوفات وفحوصات');
 
-                let redirectUrl = '/reception.html';
+                let redirectUrl = 'reception.html';
                 const rLow = role.toLowerCase();
-                if (['doctor', 'consultant', 'resident', 'specialist'].includes(rLow)) redirectUrl = '/doctor.html';
-                else if (rLow === 'admin') redirectUrl = '/admin.html';
-                else if (rLow === 'callcenter') redirectUrl = '/callcenter.html';
+                if (['doctor', 'consultant', 'resident', 'specialist'].includes(rLow)) redirectUrl = 'doctor.html';
+                else if (rLow === 'admin') redirectUrl = 'admin.html';
+                else if (rLow === 'callcenter') redirectUrl = 'callcenter.html';
+                else if (rLow === 'dilation') redirectUrl = 'dilation.html';
 
                 return { success: true, fullName: data.FullName, roleName: role, redirectUrl };
             } catch (e) {
@@ -37,7 +38,7 @@ const api = {
         },
         logout() {
             sessionStorage.clear();
-            window.location.href = '/index.html';
+            window.location.href = 'index.html';
         }
     },
 
@@ -180,7 +181,7 @@ const api = {
             await db.from('Appointments').update({ PatientID: masterId }).eq('PatientID', duplicateId);
             await db.from('PatientQueue').update({ PatientID: masterId }).eq('PatientID', duplicateId);
             await db.from('PatientAttachments').update({ PatientID: masterId }).eq('PatientID', duplicateId);
-            
+
             const { data: pDup } = await db.from('Patients').select('FullName').eq('PatientID', duplicateId).single();
             if (pDup) {
                 await db.from('Patients').update({
@@ -255,10 +256,10 @@ const api = {
         },
         async finishVisit(dto) {
             await db.from('PatientQueue').update({ Status: 'Done' }).eq('QueueID', dto.queueId);
-            
+
             const today = new Date().toISOString().split('T')[0];
             const fullDetails = ` | تشخيص: ${dto.diagnosis || ''} | فحص: ${dto.findings || ''} | نظارة: ${dto.glassesOd || ''} / ${dto.glassesOs || ''} | روشتة: ${dto.prescription || ''}`;
-            
+
             const { data: appts } = await db.from('Appointments')
                 .select('AppointmentID, Notes')
                 .eq('PatientID', dto.patientId)
@@ -419,20 +420,25 @@ const api = {
         },
         async save(dto, editId = 0) {
             const { data: r } = await db.from('Roles').select('RoleID').eq('RoleName', dto.roleName).single();
+            if (!r) return { success: false, message: `الدور "${dto.roleName}" غير موجود في جدول Roles!` };
+
             const payload = {
                 Username: dto.username.trim(),
                 FullName: dto.fullName.trim(),
-                RoleID: r ? r.RoleID : 1,
+                RoleID: r.RoleID,
                 DoctorScope: dto.doctorScope || 'كشوفات وفحوصات',
                 Notes: dto.title || '',
                 AllowedScreens: dto.allowedScreens || 'all'
             };
             if (dto.password) payload.PasswordHash = dto.password.trim();
+            else if (editId === 0) return { success: false, message: 'كلمة المرور مطلوبة للمستخدم الجديد!' };
 
             if (editId > 0) {
-                await db.from('Users').update(payload).eq('UserID', editId);
+                const { error } = await db.from('Users').update(payload).eq('UserID', editId);
+                if (error) return { success: false, message: error.message };
             } else {
-                await db.from('Users').insert([payload]);
+                const { error } = await db.from('Users').insert([payload]);
+                if (error) return { success: false, message: error.message };
             }
             return { success: true };
         },
@@ -497,6 +503,7 @@ window.fetch = async function(url, opts = {}) {
         }
         if (url.startsWith('/api/admin/medications/')) {
             const id = parseInt(url.split('/').pop());
+            if (method === 'PUT') return toRes(await api.medications.save(body, id));
             if (method === 'DELETE') return toRes(await api.medications.delete(id));
         }
         if (url === '/api/admin/insurance') {
@@ -510,11 +517,17 @@ window.fetch = async function(url, opts = {}) {
         }
         if (url === '/api/admin/users') {
             if (method === 'GET') return toRes(await api.users.getAll());
-            if (method === 'POST') return toRes(await api.users.save(body));
+            if (method === 'POST') {
+                const r = await api.users.save(body);
+                return toRes(r, r.success ? 200 : 400);
+            }
         }
         if (url.startsWith('/api/admin/users/')) {
             const id = parseInt(url.split('/').pop());
-            if (method === 'PUT') return toRes(await api.users.save(body, id));
+            if (method === 'PUT') {
+                const r = await api.users.save(body, id);
+                return toRes(r, r.success ? 200 : 400);
+            }
             if (method === 'DELETE') return toRes(await api.users.delete(id));
         }
         if (url.startsWith('/api/admin/doctors')) return toRes(await api.users.getDoctors());
