@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز حبشي للعيون - شاشة متابعة مراحل المرضى والنداء الآلي</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <style>
+        body { background: #090d16; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; overflow-x: hidden; min-height: 100vh; }
+        .queue-header { background: #111827; border-bottom: 2px solid #1f2937; padding: 15px 30px; }
+        .stage-column { background: #111827; border-radius: 12px; border: 1px solid #1f2937; min-height: 80vh; padding: 15px; }
+        .stage-header { font-weight: 800; font-size: 1.05rem; padding-bottom: 10px; margin-bottom: 15px; border-bottom: 2px solid #374151; display: flex; justify-content: space-between; align-items: center; }
+        
+        .ticket-card { background: #1f2937; border-radius: 10px; padding: 12px; margin-bottom: 12px; border-right: 5px solid #3b82f6; transition: 0.3s; animation: fadeIn 0.4s ease-in-out; }
+        .ticket-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .ticket-card.in-exam { border-right-color: #10b981; background: #064e3b; }
+        .ticket-card.dilating { border-right-color: #f59e0b; background: #451a03; }
+        .ticket-card.ready { border-right-color: #06b6d4; background: #083344; }
+
+        .ticket-num { font-size: 1.8rem; font-weight: 900; line-height: 1; color: #60a5fa; }
+        .patient-title { font-size: 1.05rem; font-weight: 700; margin: 3px 0; }
+        .clinic-target { font-size: 0.8rem; color: #9ca3af; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- رأس الشاشة الرسمي -->
+    <header class="queue-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <span style="font-size: 2.5rem;" class="me-3">👁️</span>
+            <div>
+                <h3 class="m-0 fw-bold text-white">مركز حبشي التخصصي للعيون</h3>
+                <small class="text-primary fw-bold">شاشة المتابعة الذكية لرحلة المريض ومراحل الكشف (Patient Journey Tracker)</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div id="clockDisplay" class="fs-4 fw-bold font-monospace text-warning">--:--:--</div>
+            <button class="btn btn-sm btn-outline-info" onclick="testAudioCall()">🔊 اختبار النداء</button>
+        </div>
+    </header>
+
+    <div class="container-fluid px-4 py-3">
+        <div class="row g-3">
+            
+            <!-- 1. محطة الاستقبال والانتظار -->
+            <div class="col">
+                <div class="stage-column">
+                    <div class="stage-header text-primary">
+                        <span>1️⃣ في صالة الانتظار</span>
+                        <span id="badgeWaiting" class="badge bg-primary">0</span>
+                    </div>
+                    <div id="colWaiting"></div>
+                </div>
+            </div>
+
+            <!-- 2. محطة قطرات التوسيع -->
+            <div class="col">
+                <div class="stage-column" style="border-color: #f59e0b;">
+                    <div class="stage-header text-warning">
+                        <span>2️⃣ محطة القطرات والتوسيع 💧</span>
+                        <span id="badgeDilating" class="badge bg-warning text-dark">0</span>
+                    </div>
+                    <div id="colDilating"></div>
+                </div>
+            </div>
+
+            <!-- 3. جاهز لإعادة الفحص بعد التوسيع -->
+            <div class="col">
+                <div class="stage-column" style="border-color: #06b6d4;">
+                    <div class="stage-header text-info">
+                        <span>3️⃣ اكتمل التوسيع (أولوية) ⚡</span>
+                        <span id="badgeReady" class="badge bg-info text-dark">0</span>
+                    </div>
+                    <div id="colReady"></div>
+                </div>
+            </div>
+
+            <!-- 4. داخل عيادة الطبيب / الفحص -->
+            <div class="col">
+                <div class="stage-column" style="border-color: #10b981;">
+                    <div class="stage-header text-success">
+                        <span>4️⃣ بالداخل مع الطبيب 👨‍⚕️</span>
+                        <span id="badgeInExam" class="badge bg-success">0</span>
+                    </div>
+                    <div id="colInExam"></div>
+                </div>
+            </div>
+
+            <!-- 5. الحالات المكتملة حديثاً -->
+            <div class="col">
+                <div class="stage-column">
+                    <div class="stage-header text-secondary">
+                        <span>5️⃣ اكتمل الكشف ✔️</span>
+                        <span id="badgeDone" class="badge bg-secondary">0</span>
+                    </div>
+                    <div id="colDone"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let previousExamCallId = 0;
+
+        window.onload = function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            loadFullQueue();
+            initRealtime();
+        };
+
+        function updateClock() {
+            document.getElementById('clockDisplay').innerText = new Date().toLocaleTimeString('ar-EG');
+        }
+
+        function initRealtime() {
+            try {
+                db.channel('public-journey-tracker')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'PatientQueue' }, (payload) => {
+                        loadFullQueue();
+                        // نداء صوتي إذا تحولت حالة المريض إلى داخل العيادة
+                        if (payload.new && payload.new.Status === 'InConsultation' && payload.new.QueueID !== previousExamCallId) {
+                            previousExamCallId = payload.new.QueueID;
+                            announcePatient(payload.new.QueueNumber, payload.new.DoctorName || payload.new.Department);
+                        }
+                    })
+                    .subscribe();
+            } catch (e) { }
+        }
+
+        async function loadFullQueue() {
+            const today = new Date().toISOString().split('T')[0];
+            try {
+                const { data, error } = await db.from('PatientQueue')
+                    .select('*, Patients(FullName)')
+                    .gte('ArrivedTime', today)
+                    .order('QueueNumber', { ascending: true });
+
+                if (error) throw error;
+                renderStages(data || []);
+            } catch (e) { }
+        }
+
+        function renderStages(list) {
+            const colWaiting = document.getElementById('colWaiting');
+            const colDilating = document.getElementById('colDilating');
+            const colReady = document.getElementById('colReady');
+            const colInExam = document.getElementById('colInExam');
+            const colDone = document.getElementById('colDone');
+
+            colWaiting.innerHTML = '';
+            colDilating.innerHTML = '';
+            colReady.innerHTML = '';
+            colInExam.innerHTML = '';
+            colDone.innerHTML = '';
+
+            let cWait = 0, cDil = 0, cRdy = 0, cExam = 0, cDone = 0;
+
+            list.forEach(item => {
+                const card = `
+                    <div class="ticket-card ${getCardClass(item.Status)}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="ticket-num">${item.QueueNumber}</span>
+                            <span class="badge bg-dark">${item.Department}</span>
+                        </div>
+                        <div class="patient-title text-truncate">${item.Patients?.FullName || 'مريض'}</div>
+                        <div class="clinic-target">${item.DoctorName ? 'د. ' + item.DoctorName : item.ServiceType || ''}</div>
+                    </div>`;
+
+                if (item.Status === 'Waiting') { colWaiting.innerHTML += card; cWait++; }
+                else if (item.Status === 'Dilating') { colDilating.innerHTML += card; cDil++; }
+                else if (item.Status === 'DilationReady') { colReady.innerHTML += card; cRdy++; }
+                else if (item.Status === 'InConsultation') { colInExam.innerHTML += card; cExam++; }
+                else if (item.Status === 'Done') { colDone.innerHTML += card; cDone++; }
+            });
+
+            document.getElementById('badgeWaiting').innerText = cWait;
+            document.getElementById('badgeDilating').innerText = cDil;
+            document.getElementById('badgeReady').innerText = cRdy;
+            document.getElementById('badgeInExam').innerText = cExam;
+            document.getElementById('badgeDone').innerText = cDone;
+        }
+
+        function getCardClass(st) {
+            if (st === 'InConsultation') return 'in-exam';
+            if (st === 'Dilating') return 'dilating';
+            if (st === 'DilationReady') return 'ready';
+            return '';
+        }
+
+        function announcePatient(queueNo, target) {
+            if (!('speechSynthesis' in window)) return;
+            const text = `تذكرة رقم ${queueNo}، تفضل إلى ${target}`;
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'ar-SA';
+            msg.rate = 0.85;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function testAudioCall() {
+            announcePatient(15, "عيادة كشف العيون");
+        }
+    </script>
+</body>
+</html>
